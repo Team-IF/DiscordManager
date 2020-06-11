@@ -1,14 +1,14 @@
-﻿using System.Net.Sockets;
+﻿using System.Collections.Generic;
+using System.Net.Sockets;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 
 namespace DiscordManager.Interfaces
 {
-    public class CommonBuilder<T> : BuilderOptions where T : CommonBuilder<T>
+    public class CommonBuilder<T> where T : CommonBuilder<T>
     {
-        internal T Instance { get; set; }
-
+        internal Dictionary<string, object> Options { get; } = new Dictionary<string, object>();
         /// <summary>
         /// It's sets the bot token and TokenType.
         /// TokenType Default Setting is <strong>Bot</strong>
@@ -20,11 +20,11 @@ namespace DiscordManager.Interfaces
         /// </summary>
         /// <param name="status">Status Type</param>
         /// <returns></returns>
-        public T WithToken(string token, TokenType tokenType = TokenType.Bot)
+        public T WithToken(string token, TokenType tokenType)
         {
-            Token = token;
-            TokenType = tokenType;
-            return Instance;
+            Options["Token"] = token;
+            Options["TokenType"] = tokenType;
+            return (T)this;
         }
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace DiscordManager.Interfaces
         /// <returns></returns>
         public T WithStatus(UserStatus status)
         {
-            UserStatus = status;
-            return Instance;
+            Options["Status"] = status;
+            return (T)this;
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace DiscordManager.Interfaces
         /// <returns></returns>
         public T WithActivity(Game game)
         {
-            Activity = game;
-            return Instance;
+            Options["Game"] = game;
+            return (T)this;
         }
 
         /// <summary>
@@ -72,13 +72,29 @@ namespace DiscordManager.Interfaces
         /// <returns></returns>
         public T UseSocketConfig(DiscordSocketConfig config)
         {
-            Config = config;
-            return Instance;
+            Options["SocketConfig"] = config;
+            return (T)this;
+        }
+
+        /// <summary>
+        /// Can set the DiscordClient for the bot
+        /// <example> For Example
+        /// <code>
+        ///    Builder.SetClient(new DiscordSocketClient());
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="client">Discord Client</param>
+        /// <returns></returns>
+        public T SetClient(BaseSocketClient client)
+        {
+            Options["Client"] = client;
+            return (T) this;
         }
 
         public DiscordManager Build()
         {
-            return new DiscordManager(this);
+            return new DiscordManager(Options);
         }
     }
 }

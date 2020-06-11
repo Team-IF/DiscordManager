@@ -12,9 +12,6 @@ namespace DiscordManager.Test
         [Test]
         public void Test1()
         {
-            DiscordBuilder.UseSocketBuilder()
-                .WithToken("test2")
-                .Build();
         }
     }
 }

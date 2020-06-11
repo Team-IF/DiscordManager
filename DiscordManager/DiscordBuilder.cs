@@ -14,49 +14,31 @@ namespace DiscordManager
         {
         }
 
-        /// <summary>
-        /// If you want to use DiscordShardedClient
-        /// </summary>
-        /// <returns>Discord Shard Builder</returns>
-        public static DiscordShardBuilder UseShardBuilder()
-        {
-            return new DiscordShardBuilder();
-        }
+        public static SocketBuilder SocketBuilder => new SocketBuilder();
+        public static ShardBuilder ShardBuilder => new ShardBuilder();
+    }
 
-        /// <summary>
-        /// If you want to use DiscordSocketClient 
-        /// </summary>
-        /// <returns>Discord Socket Builder</returns>
-        public static DiscordSocketBuilder UseSocketBuilder()
+    public class SocketBuilder : CommonBuilder<SocketBuilder>
+    {
+        internal SocketBuilder()
         {
-            return new DiscordSocketBuilder();
         }
     }
 
-    public class DiscordShardBuilder : CommonBuilder<DiscordShardBuilder>, IDiscordShardBuilder
+    public class ShardBuilder : CommonBuilder<SocketBuilder>
     {
-        internal DiscordShardBuilder()
+        internal ShardBuilder()
         {
-            Instance = this;
         }
 
-        public DiscordShardBuilder SetDiscordClient(DiscordShardedClient client)
+        /// <summary>
+        /// Can set the TotalShard for the bot. If use ShardBuilder, totalShards will use the default value of 2.
+        /// </summary>
+        /// <param name="totalShards">Total Shard Count</param>
+        /// <returns></returns>
+        public ShardBuilder WithShard(int totalShards)
         {
-            Client = client;
-            return this;
-        }
-    }
-
-    public class DiscordSocketBuilder : CommonBuilder<DiscordSocketBuilder>, IDiscordBuilder
-    {
-        internal DiscordSocketBuilder()
-        {
-            Instance = this;
-        }
-        
-        public DiscordSocketBuilder SetDiscordClient(DiscordSocketClient client)
-        {
-            Client = client;
+            Options["TotalShards"] = totalShards;
             return this;
         }
     }

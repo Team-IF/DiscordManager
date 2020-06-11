@@ -6,9 +6,6 @@ namespace DiscordManager.TestApp
     {
         static void Main(string[] args)
         {
-            DiscordBuilder.UseSocketBuilder()
-                .WithToken("test")
-                .Build();
         }
     }
 }
