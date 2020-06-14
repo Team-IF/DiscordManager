@@ -29,6 +29,7 @@ namespace DiscordManager
     {
         internal ShardBuilder()
         {
+            WithShard(2);
         }
 
         /// <summary>

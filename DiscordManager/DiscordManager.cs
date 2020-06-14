@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
@@ -16,9 +17,18 @@ namespace DiscordManager
         internal DiscordManager(Dictionary<string, object> options)
         {
             var token = (string) (options["Token"] ??
-                              throw new DiscordManagerException(
+                              throw new ManagerException(
                                   "Token not specified. The token must not be null, use the WithToken method"));
             var tokenType = (TokenType) (options["TokenType"] ?? TokenType.Bot);
+            try
+            {
+                TokenUtils.ValidateToken(tokenType, token);
+            }
+            catch (Exception e)
+            {
+                throw new ManagerException(
+                    "");
+            }
             var userStatus = (UserStatus) (options["Status"] ?? UserStatus.Online);
             var game = (Game) options["Game"];
             var totalShards = (int?) options["TotalShards"];
@@ -33,7 +43,12 @@ namespace DiscordManager
             }
         }
 
-        internal void Run()
+        internal void RegisterEvents()
+        {
+            
+        }
+
+        public void Run()
         {
         }
     }

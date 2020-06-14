@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <Folder Include="Command" />
+      <Folder Include="Logging" />
     </ItemGroup>
 
 </Project>
