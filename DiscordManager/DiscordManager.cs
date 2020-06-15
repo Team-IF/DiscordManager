@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
+using DiscordManager.Event;
 
 namespace DiscordManager
 {
     /// <summary>
     /// It's DiscordManager Core
     /// </summary>
-    public class DiscordManager
+    public class DiscordManager : Events
     {
         private BaseSocketClient Client;
 
-        internal DiscordManager(Dictionary<string, object> options)
+        internal DiscordManager(IReadOnlyDictionary<string, object> options)
         {
             var token = (string) (options["Token"] ??
                               throw new ManagerException(

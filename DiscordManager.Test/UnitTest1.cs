@@ -12,6 +12,7 @@ namespace DiscordManager.Test
         [Test]
         public void Test1()
         {
+            var discordManager = DiscordBuilder.SocketBuilder.Build();
         }
     }
 }
