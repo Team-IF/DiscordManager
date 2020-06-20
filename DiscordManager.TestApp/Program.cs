@@ -13,7 +13,7 @@ namespace DiscordManager.TestApp
                 .SocketBuilder
                 .WithActivity(new Game("Live For Test"))
                 .WithLogLevel(LogLevel.ALL)
-                .WithCommandModule("!")
+                .WithCommandModule()
                 .Build();
 
             discordManager.Log += Log;
