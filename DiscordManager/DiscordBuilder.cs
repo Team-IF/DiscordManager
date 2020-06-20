@@ -37,9 +37,10 @@ namespace DiscordManager
         /// </summary>
         /// <param name="totalShards">Total Shard Count</param>
         /// <returns></returns>
-        public ShardBuilder WithShard(int totalShards)
+        public ShardBuilder WithShard(int? totalShards, int[]? ShardIds = null)
         {
-            Options["TotalShards"] = totalShards;
+            Option.Shards = totalShards;
+            Option.ShardIds = ShardIds;
             return this;
         }
     }
