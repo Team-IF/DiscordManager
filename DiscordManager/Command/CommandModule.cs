@@ -6,10 +6,9 @@ namespace DiscordManager.Command
 {
     public abstract class CommandModule : Context
     {
-        protected RestUserMessage Reply(string text)
+        protected async Task<RestUserMessage> ReplyAsync(string text)
         {
-            return Channel.SendMessageAsync(text).ConfigureAwait(false)
-                .GetAwaiter().GetResult();
+            return await Channel.SendMessageAsync(text).ConfigureAwait(false);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace DiscordManager
         }
     }
 
-    public class ShardBuilder : CommonBuilder<SocketBuilder>
+    public class ShardBuilder : CommonBuilder<ShardBuilder>
     {
         internal ShardBuilder()
         {

@@ -7,7 +7,7 @@ namespace DiscordManager.TestApp
         [CommandName("Test")]
         public void TestMethod()
         {
-            _ = Reply("Test");
+            ReplyAsync("Test");
         }
     }
 }
