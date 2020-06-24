@@ -11,7 +11,7 @@ namespace DiscordManager
         {
         }
 
-        public static string Version = "0.0.2";
+        public static readonly string Version = typeof(BuildOption).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
         public BaseSocketClient? Client;
         public DiscordSocketConfig? SocketConfig;
         public TokenType Type = TokenType.Bot;

@@ -1,10 +1,10 @@
 # DiscordManager
-[![NuGet](https://img.shields.io/nuget/vpre/DiscordManager.svg?maxAge=2592000?style=plastic)](https://www.nuget.org/packages/DiscordManager)
-
 해당 DiscordManager 는 C#으로 디스코드 봇을 처음 만들어보는 "초심자"를 위해 만들어졌습니다.
 현재 여러 편의 기능들을 구현중에 있습니다.
 
 아직 Alpha 버전으로서 Document가 작성되지 않은 곳이 있을 수 있습니다.
+
+해당 라이브러리는 [Github Package](https://github.com/Team-IF/DiscordManager/packages)를 사용합니다.
 
 ### 기본 사용법
 
