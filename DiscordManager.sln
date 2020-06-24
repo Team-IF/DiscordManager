@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordManager", "DiscordManager\DiscordManager.csproj", "{A8F394F4-D089-427E-89E4-A119CF0DD93C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordManager.Test", "DiscordManager.Test\DiscordManager.Test.csproj", "{C9555662-9F39-432F-A152-A1A7ED173437}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordManager.TestApp", "DiscordManager.TestApp\DiscordManager.TestApp.csproj", "{F6433E4D-7B8E-49BB-A7E4-B92D62A5038C}"
 EndProject
 Global
@@ -16,10 +14,6 @@ Global
 		{A8F394F4-D089-427E-89E4-A119CF0DD93C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8F394F4-D089-427E-89E4-A119CF0DD93C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8F394F4-D089-427E-89E4-A119CF0DD93C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9555662-9F39-432F-A152-A1A7ED173437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9555662-9F39-432F-A152-A1A7ED173437}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9555662-9F39-432F-A152-A1A7ED173437}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9555662-9F39-432F-A152-A1A7ED173437}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F6433E4D-7B8E-49BB-A7E4-B92D62A5038C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F6433E4D-7B8E-49BB-A7E4-B92D62A5038C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6433E4D-7B8E-49BB-A7E4-B92D62A5038C}.Release|Any CPU.ActiveCfg = Release|Any CPU

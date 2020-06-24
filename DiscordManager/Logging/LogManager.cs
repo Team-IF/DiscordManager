@@ -58,7 +58,7 @@ namespace DiscordManager.Logging
 
         public async Task PrintVersion()
         {
-            await _privateLogger.InfoAsync($"Discord Manager v{BuildOption.ManagerVersion}").ConfigureAwait(false);
+            await _privateLogger.InfoAsync($"Discord Manager v{BuildOption.Version}").ConfigureAwait(false);
         }
     }
 }

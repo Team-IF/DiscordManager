@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Reflection;
+using Discord;
 using Discord.WebSocket;
 using DiscordManager.Logging;
 
@@ -9,7 +10,8 @@ namespace DiscordManager
         internal BuildOption()
         {
         }
-        public static string ManagerVersion { get; } = "0.0.1A";
+
+        public static string Version = "0.0.2";
         public BaseSocketClient? Client;
         public DiscordSocketConfig? SocketConfig;
         public TokenType Type = TokenType.Bot;

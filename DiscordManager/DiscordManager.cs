@@ -66,6 +66,7 @@ namespace DiscordManager
         private async Task Init(string token)
         {
             await _clientLogger.InfoAsync("Discord Manager Initialize....").ConfigureAwait(false);
+            await LogManager.PrintVersion().ConfigureAwait(false);
             await _clientLogger.DebugAsync("Check Internet is Available").ConfigureAwait(false);
             if (!NetworkInterface.GetIsNetworkAvailable())
             {
