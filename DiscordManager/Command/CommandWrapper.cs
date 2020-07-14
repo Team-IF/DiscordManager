@@ -6,7 +6,7 @@ namespace DiscordManager.Command
 {
     internal class CommandWrapper
     {
-        public CommandWrapper(CommandName commandName, RequirePermission permission, RequireBotPermission botPermission, MethodInfo info)
+        public CommandWrapper(CommandName commandName, RequirePermission? permission, RequireBotPermission? botPermission, MethodInfo info)
         {
             _commandName = commandName.Names;
             Permission = permission?.Permission ?? Permission.User;
@@ -28,7 +28,7 @@ namespace DiscordManager.Command
         ///     Check Permission
         /// </summary>
         /// <returns>return Missing Permissions But if Empty doesn't have Missing Permissions</returns>
-        public GuildPermission[] CheckPermissions(IGuildUser currentUser)
+        public GuildPermission[]? CheckPermissions(IGuildUser currentUser)
         {
             var currentPermission = currentUser.GuildPermissions;
             if (currentPermission.Administrator)

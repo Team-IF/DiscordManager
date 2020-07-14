@@ -7,10 +7,6 @@ namespace DiscordManager
 {
     internal class BuildOption
     {
-        internal BuildOption()
-        {
-        }
-
         public static readonly string Version = typeof(BuildOption).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
         public BaseSocketClient? Client;
         public DiscordSocketConfig? SocketConfig;

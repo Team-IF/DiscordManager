@@ -4,6 +4,10 @@ using Discord;
 
 namespace DiscordManager.Command
 {
+    /// <summary>
+    /// Use For Command Method
+    /// Set Command Name or Command Names
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class CommandName : Attribute
     {
@@ -15,6 +19,10 @@ namespace DiscordManager.Command
         }
     }
     
+    /// <summary>
+    /// Use For Command Method
+    /// Set Require Permission for Bot execute this Command
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class RequireBotPermission : Attribute
     {
@@ -26,6 +34,10 @@ namespace DiscordManager.Command
         }
     }
 
+    /// <summary>
+    /// Use For Command Method
+    /// Set Require Permission for User execute this Command
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class RequirePermission : Attribute
     {

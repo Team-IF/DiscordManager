@@ -12,6 +12,7 @@
         <Configurations>Debug;Release</Configurations>
         <RepositoryUrl>https://github.com/Team-IF/DiscordManager</RepositoryUrl>
         <Platforms>AnyCPU</Platforms>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

@@ -74,7 +74,6 @@ namespace DiscordManager
                     "UnAvailable Internet Check Your Pc/Server Internet State");
             }
 
-            RegisterEvents();
             await _clientLogger.DebugAsync("Check Token is Validated").ConfigureAwait(false);
             try
             {
@@ -87,6 +86,9 @@ namespace DiscordManager
             }
 
             await _clientLogger.DebugAsync("Successfully Check Token").ConfigureAwait(false);
+            await _clientLogger.DebugAsync("Register Events...").ConfigureAwait(false);
+            RegisterEvents();
+            await _clientLogger.DebugAsync("Successfully Register Events").ConfigureAwait(false);
             await Client.LoginAsync(TokenType, token);
             await Client.StartAsync();
             await _clientLogger.InfoAsync("Successfully Start Discord Client").ConfigureAwait(false);
@@ -97,7 +99,7 @@ namespace DiscordManager
             await Task.Delay(-1);
         }
 
-        internal void RegisterEvents()
+        private void RegisterEvents()
         {
             Client.Log += message =>
                 _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));

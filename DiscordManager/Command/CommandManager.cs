@@ -71,9 +71,7 @@ namespace DiscordManager.Command
                     var method = methods[j];
                     if (!method.IsPublic)
                         continue;
-                    var commandName =
-                        Attribute.GetCustomAttribute(method, typeof(CommandName), true) as CommandName;
-                    if (commandName == null)
+                    if (!(Attribute.GetCustomAttribute(method, typeof(CommandName), true) is CommandName commandName))
                         throw new ManagerException($"{method.Name} has None CommandName Attribute.");
                     
                     if (commandName.Names.Any(name => nameList.Any(names => names.Contains(name))))
