@@ -33,21 +33,6 @@ namespace DiscordManager.Interfaces
             Option.LogLevel = level;
             return (T) this;
         }
-        /// <summary>
-        /// It's sets the bot token and TokenType.
-        /// TokenType Default Setting is <strong>Bot</strong>
-        /// <example> For Example
-        /// <code>
-        ///    Builder.WithToken("Token");
-        /// </code>
-        /// </example>
-        /// </summary>
-        /// <param name="status">Status Type</param>
-        public T WithToken(TokenType tokenType)
-        {
-            Option.Type = tokenType;
-            return (T)this;
-        }
 
         /// <summary>
         /// Can set the Status for the bot

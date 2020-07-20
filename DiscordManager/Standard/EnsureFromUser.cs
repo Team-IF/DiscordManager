@@ -4,7 +4,7 @@ using DiscordManager.Command;
 
 namespace DiscordManager.Standard
 {
-  public class EnsureFromUser : IStandard<IMessage>
+  internal class EnsureFromUser : IStandard<IMessage>
   {
     public Task<bool> CheckAsync(Context context, IMessage param)
     {

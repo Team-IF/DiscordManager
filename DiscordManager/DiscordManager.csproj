@@ -11,6 +11,7 @@
         <Authors>nature@teamif.io</Authors>
         <Configurations>Debug;Release</Configurations>
         <RepositoryUrl>https://github.com/Team-IF/DiscordManager</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Team-IF/DiscordManager</PackageProjectUrl>
         <Platforms>AnyCPU</Platforms>
         <Nullable>enable</Nullable>
     </PropertyGroup>
