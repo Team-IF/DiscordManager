@@ -4,8 +4,12 @@
 
 아직 Alpha 버전으로서 Document가 작성되지 않은 곳이 있을 수 있습니다.
 
-해당 라이브러리는 [Github Package](https://github.com/Team-IF/DiscordManager/packages)를 사용합니다.
+~~해당 라이브러리는 [Github Package](https://github.com/Team-IF/DiscordManager/packages) 를 사용합니다.~~
+해당 라이브러리는 Nuget을 사용합니다.
 
+[![NuGet](https://img.shields.io/nuget/vpre/DiscordManager.svg?maxAge=2592000?style=plastic)](https://www.nuget.org/packages/DiscordManager)
+
+Designed as a motive of [Addons.Interactive](https://github.com/foxbot/Discord.Addons.Interactive)
 ### 기본 사용법
 
 ```cs

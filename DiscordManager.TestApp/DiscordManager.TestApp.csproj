@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="DiscordManager" Version="0.0.1" />
+      <ProjectReference Include="..\DiscordManager\DiscordManager.csproj" />
     </ItemGroup>
 
 </Project>

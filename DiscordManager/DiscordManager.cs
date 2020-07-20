@@ -44,7 +44,7 @@ namespace DiscordManager
             if (option.UseCommandModule)
             {
                 _clientLogger.DebugAsync("Load CommandModules...");
-                CommandManager.LoadCommands();
+                CommandManager.LoadCommands(Client);
                 Client.MessageReceived += Command ?? ClientOnMessageReceived;
             }
         }
@@ -89,9 +89,8 @@ namespace DiscordManager
             await _clientLogger.DebugAsync("Register Events...").ConfigureAwait(false);
             RegisterEvents();
             await _clientLogger.DebugAsync("Successfully Register Events").ConfigureAwait(false);
-            await Client.LoginAsync(TokenType, token);
-            await Client.StartAsync();
-            await _clientLogger.InfoAsync("Successfully Start Discord Client").ConfigureAwait(false);
+            await Client.LoginAsync(TokenType, token).ConfigureAwait(false);
+            await Client.StartAsync().ConfigureAwait(false);
 
             await Client.SetStatusAsync(Status);
             if (Activity != null)
@@ -105,7 +104,7 @@ namespace DiscordManager
                 _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));
         }
 
-        public async Task Run(string token)
+        public void Run(string token)
         {
             try
             {
@@ -113,7 +112,7 @@ namespace DiscordManager
             }
             catch (ManagerException e)
             {
-                await _clientLogger.CriticalAsync(e.Message, e).ConfigureAwait(false);
+                _clientLogger.CriticalAsync(e.Message, e).ConfigureAwait(false);
             }
         }
     }

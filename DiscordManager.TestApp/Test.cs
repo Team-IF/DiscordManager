@@ -8,6 +8,8 @@ namespace DiscordManager.TestApp
         public void TestMethod()
         {
             ReplyAsync("Test");
+            var res = NextMessageAsync().Result;
+            ReplyAsync(res.Content);
         }
     }
 }

@@ -11,9 +11,9 @@ namespace DiscordManager.Command
     public static class CommandManager
     {
         internal static Logger _commandLogger;
-        private static IReadOnlyDictionary<object, IReadOnlyCollection<CommandWrapper>> _commands;
+        private static IReadOnlyDictionary<Context, IReadOnlyCollection<CommandWrapper>> _commands;
 
-        private static KeyValuePair<object, CommandWrapper>? GetCommand(string commandName)
+        private static KeyValuePair<Context, CommandWrapper>? GetCommand(string commandName)
         {
             for (var i = 0; i < _commands.Count; i++)
             {
@@ -51,13 +51,13 @@ namespace DiscordManager.Command
             return Permission.User;
         }
         
-        internal static void LoadCommands()
+        internal static void LoadCommands(BaseSocketClient client)
         {
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             var types = assembly.SelectMany(s => s.GetTypes())
                 .Where(p => !p.IsAbstract && typeof(CommandModule).IsAssignableFrom(p))
                 .ToList();
-            var commands = new Dictionary<object, IReadOnlyCollection<CommandWrapper>>();
+            var commands = new Dictionary<Context, IReadOnlyCollection<CommandWrapper>>();
             for (var i = 0; i < types.Count; i++)
             {
                 var type = types[i];
@@ -82,7 +82,8 @@ namespace DiscordManager.Command
                         Attribute.GetCustomAttribute(method, typeof(RequirePermission), true) as RequirePermission;
                     list.Add(new CommandWrapper(commandName, requirePermission, botPermission, method));
                 }
-                var construct = Activator.CreateInstance(type);
+                var construct = (Context) Activator.CreateInstance(type);
+                construct.SetClient(client);
                 commands.Add(construct, list);
             }
 
@@ -95,8 +96,7 @@ namespace DiscordManager.Command
             if (valuePair == null)
                 return;
             var command = valuePair.Value.Value;
-            var baseClass = (Context) valuePair.Value.Key;
-            baseClass.SetMessage(message);
+            var baseClass = valuePair.Value.Key;
             var channel = message.Channel;
             var task = Task.Run(async () =>
             {
@@ -114,6 +114,7 @@ namespace DiscordManager.Command
                         return;
                     }
                 }
+                baseClass.SetMessage(message);
                 service.Invoke(baseClass, args);
             });
             try

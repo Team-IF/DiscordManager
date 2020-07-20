@@ -27,5 +27,7 @@ namespace DiscordManager.Event
         }
 
         public Func<SocketMessage, Task> Command;
+        
+        
     }
 }
