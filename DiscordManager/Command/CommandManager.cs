@@ -80,7 +80,10 @@ namespace DiscordManager.Command
                         Attribute.GetCustomAttribute(method, typeof(RequireBotPermission), true) as RequireBotPermission;
                     var requirePermission =
                         Attribute.GetCustomAttribute(method, typeof(RequirePermission), true) as RequirePermission;
-                    list.Add(new CommandWrapper(commandName, requirePermission, botPermission, method));
+                    var usage = 
+                        ((CommandUsage) Attribute.GetCustomAttribute(method, typeof(CommandUsage), true))?.Usage ?? Usage.ALL;
+                    
+                    list.Add(new CommandWrapper(commandName, usage, requirePermission, botPermission, method));
                 }
                 var construct = (Context) Activator.CreateInstance(type);
                 construct.SetClient(client);
@@ -96,6 +99,19 @@ namespace DiscordManager.Command
             if (valuePair == null)
                 return;
             var command = valuePair.Value.Value;
+            switch (command.Usage)
+            {
+                case Usage.Guild:
+                    if (!(message.Channel is SocketGuildChannel))
+                        return;
+                    break;
+                case Usage.DM:
+                    if (!(message.Channel is SocketDMChannel))
+                        return;
+                    break;
+                case Usage.ALL:
+                    break;
+            }
             var baseClass = valuePair.Value.Key;
             var channel = message.Channel;
             var task = Task.Run(async () =>

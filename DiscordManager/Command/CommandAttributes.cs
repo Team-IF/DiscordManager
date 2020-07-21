@@ -18,6 +18,20 @@ namespace DiscordManager.Command
             Names = commandName;
         }
     }
+
+    /// <summary>
+    /// Use For Command Usage
+    /// Can set where to use the command
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public class CommandUsage : Attribute
+    {
+        internal readonly Usage Usage;
+        public CommandUsage(Usage usage)
+        {
+            Usage = usage;
+        }
+    }
     
     /// <summary>
     /// Use For Command Method
