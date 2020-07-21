@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using DiscordManager.Standard;
@@ -14,9 +15,9 @@ namespace DiscordManager.Command
     public abstract class CommandModule : Context
     {
         private readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(3);
-        protected async Task<RestUserMessage> ReplyAsync(string text)
+        protected async Task<RestUserMessage> ReplyAsync(string text, Embed embed = null, bool isTTS = false)
         {
-            return await Channel.SendMessageAsync(text).ConfigureAwait(false);
+            return await Channel.SendMessageAsync(text, isTTS, embed).ConfigureAwait(false);
         }
 
         protected async Task<SocketMessage?> NextMessageAsync(TimeSpan? timeOut = null, bool catchAny = false, CancellationToken token = default)
