@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord;
+using DiscordManager.Event;
 using DiscordManager.Logging;
 
 namespace DiscordManager.TestApp

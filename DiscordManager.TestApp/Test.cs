@@ -1,13 +1,13 @@
-﻿using Discord;
-using DiscordManager.Command;
+﻿using DiscordManager.Command;
 
 namespace DiscordManager.TestApp
 {
     public class Test : CommandModule
     {
-        [CommandName("Test")]
+        [CommandName("Test"), RequirePermission(Permission.Admin)]
         public void TestMethod()
         {
+            ReplyAsync("Test");
         }
     }
 }
