@@ -20,13 +20,7 @@ namespace DiscordManager.Command
         {
             return await Channel.SendMessageAsync(text, isTTS, embed).ConfigureAwait(false);
         }
-
-        protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote emote, TimeSpan? timeOut = null,
-            CancellationToken token = default)
-        {
-            return await NextEmojiAsync(message, new []{emote}, timeOut, token);
-        }
-        protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote[] emotes, TimeSpan? timeOut = null, CancellationToken token = default)
+        protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote targetEmote, IEmote[] emotes = null, TimeSpan? timeOut = null, CancellationToken token = default)
         {
             timeOut ??= _defaultTimeout;
             
@@ -37,8 +31,10 @@ namespace DiscordManager.Command
 
             async Task Handler(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel, SocketReaction arg3)
             {
-                if (arg3.MessageId == message.Id && emotes.Contains(arg3.Emote)) eventTrigger.SetResult(arg3.Emote);
+                if (arg3.MessageId == message.Id && Equals(arg3.Emote, targetEmote)) eventTrigger.SetResult(arg3.Emote);
             }
+
+            await message.AddReactionsAsync(emotes);
 
             Client.ReactionAdded += Handler;
 

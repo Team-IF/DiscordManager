@@ -8,9 +8,6 @@ namespace DiscordManager.TestApp
         [CommandName("Test")]
         public void TestMethod()
         {
-            var restUserMessage = ReplyAsync("Test").Result;
-            var res = NextEmojiAsync(restUserMessage, new IEmote[]{new Emoji("🇾")}).Result;
-            ReplyAsync(res.Name);
         }
     }
 }
