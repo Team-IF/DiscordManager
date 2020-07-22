@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -21,7 +22,7 @@ namespace DiscordManager.Command
       return await Channel.SendMessageAsync(text, isTTS, embed).ConfigureAwait(false);
     }
 
-    protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote targetEmote, IEmote[] emotes = null,
+    protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote[] emotes,
       TimeSpan? timeOut = null, CancellationToken token = default)
     {
       timeOut ??= _defaultTimeout;
@@ -34,10 +35,13 @@ namespace DiscordManager.Command
       async Task Handler(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel,
         SocketReaction arg3)
       {
-        if (arg3.MessageId == message.Id && Equals(arg3.Emote, targetEmote)) eventTrigger.SetResult(arg3.Emote);
+        if (arg3.MessageId == message.Id && arg3.UserId ==  Message.Author.Id && emotes.Contains(arg3.Emote)) eventTrigger.SetResult(arg3.Emote);
       }
 
-      await message.AddReactionsAsync(emotes);
+      for (int i = 0; i < emotes.Length; i++)
+      {
+        _ = message.AddReactionAsync(emotes[i]);
+      }
 
       Client.ReactionAdded += Handler;
 

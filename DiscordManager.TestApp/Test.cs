@@ -1,13 +1,18 @@
-﻿using DiscordManager.Command;
+﻿using Discord;
+using DiscordManager.Command;
 
 namespace DiscordManager.TestApp
 {
     public class Test : CommandModule
     {
         [CommandName("Test"), RequirePermission(Permission.Admin)]
-        public void TestMethod(string[] args)
+        public async void TestMethod(string[] args)
         {
-            ReplyAsync("Test");
+            var replyAsync = await ReplyAsync("Test");
+            var targetEmote = new Emoji("🇾");
+            var emoji = await NextEmojiAsync(replyAsync, new IEmote[] {targetEmote, new Emoji("🇳")});
+            if (Equals(targetEmote, emoji))
+                await ReplyAsync(emoji.Name);
         }
     }
 }
