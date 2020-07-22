@@ -15,7 +15,7 @@ namespace DiscordManager.Command
     public abstract class CommandModule : Context
     {
         private readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(3);
-        protected async Task<RestUserMessage> ReplyAsync(string text, Embed embed = null, bool isTTS = false)
+        protected async Task<RestUserMessage> ReplyAsync(string text = null, Embed embed = null, bool isTTS = false)
         {
             return await Channel.SendMessageAsync(text, isTTS, embed).ConfigureAwait(false);
         }

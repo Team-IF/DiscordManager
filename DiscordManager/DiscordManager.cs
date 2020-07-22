@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Discord;
@@ -60,7 +61,7 @@ namespace DiscordManager
             var firstWord = splitContent[0];
             if (!firstWord.StartsWith(Prefix)) return;
             var commandName = firstWord.Substring(Prefix.Length);
-            CommandManager.ExecuteCommand(arg, commandName);
+            CommandManager.ExecuteCommand(arg, commandName, splitContent.Skip(1).ToArray());
         }
 
         private async Task Init(string token)
