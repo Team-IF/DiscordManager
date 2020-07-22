@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Version>0.1.0</Version>
+        <Version>0.1.1</Version>
         <PackageId>DiscordManager</PackageId>
         <PackageTags>Discord</PackageTags>
         <Title>DiscordManager</Title>

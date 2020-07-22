@@ -62,7 +62,7 @@ namespace DiscordManager
       var firstWord = splitContent[0];
       if (!firstWord.StartsWith(Prefix)) return;
       var commandName = firstWord.Substring(Prefix.Length);
-      CommandManager.ExecuteCommand(arg, commandName, splitContent.Skip(1).ToArray());
+      CommandManager.ExecuteCommand(arg, commandName, new object[] {splitContent});
     }
 
     private async Task Init(string token)

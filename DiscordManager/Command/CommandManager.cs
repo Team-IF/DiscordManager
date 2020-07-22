@@ -135,7 +135,15 @@ namespace DiscordManager.Command
 
         await _commandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
         baseClass.SetMessage(message);
-        service.Invoke(baseClass, service.GetParameters().Length == 0 ? null : param);
+        try
+        {
+          var parameters = service.GetParameters();
+          service.Invoke(baseClass, parameters.Length == 0 ? null : param);
+        }
+        catch (Exception e)
+        {
+          throw e;
+        }
       });
       try
       {
