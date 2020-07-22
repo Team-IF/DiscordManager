@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -20,6 +21,39 @@ namespace DiscordManager.Command
             return await Channel.SendMessageAsync(text, isTTS, embed).ConfigureAwait(false);
         }
 
+        protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote emote, TimeSpan? timeOut = null,
+            CancellationToken token = default)
+        {
+            return await NextEmojiAsync(message, new []{emote}, timeOut, token);
+        }
+        protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote[] emotes, TimeSpan? timeOut = null, CancellationToken token = default)
+        {
+            timeOut ??= _defaultTimeout;
+            
+            var eventTrigger = new TaskCompletionSource<IEmote>();
+            var cancelTrigger = new TaskCompletionSource<bool>();
+
+            token.Register(() => cancelTrigger.SetResult(true));
+
+            async Task Handler(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel, SocketReaction arg3)
+            {
+                if (arg3.MessageId == message.Id && emotes.Contains(arg3.Emote)) eventTrigger.SetResult(arg3.Emote);
+            }
+
+            Client.ReactionAdded += Handler;
+
+            var trigger = eventTrigger.Task;
+            var cancel = cancelTrigger.Task;
+            var delay = Task.Delay(timeOut.Value);
+            var task = await Task.WhenAny(trigger, delay, cancel).ConfigureAwait(false);
+
+            Client.ReactionAdded -= Handler;
+
+            if (task == trigger)
+                return await trigger.ConfigureAwait(false);
+            return null;
+        }
+
         protected async Task<SocketMessage?> NextMessageAsync(TimeSpan? timeOut = null, bool catchAny = false, CancellationToken token = default)
         {
             var standard = new Standard<SocketMessage>();
@@ -28,7 +62,7 @@ namespace DiscordManager.Command
             return await NextMessageAsync(standard, timeOut, token);
         }
 
-        protected async Task<SocketMessage?> NextMessageAsync(IStandard<SocketMessage> standard, TimeSpan? timeOut = null, CancellationToken token = default)
+        private async Task<SocketMessage?> NextMessageAsync(IStandard<SocketMessage> standard, TimeSpan? timeOut = null, CancellationToken token = default)
         {
             timeOut ??= _defaultTimeout;
             

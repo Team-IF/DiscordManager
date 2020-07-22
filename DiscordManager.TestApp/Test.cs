@@ -1,4 +1,5 @@
-﻿using DiscordManager.Command;
+﻿using Discord;
+using DiscordManager.Command;
 
 namespace DiscordManager.TestApp
 {
@@ -7,9 +8,9 @@ namespace DiscordManager.TestApp
         [CommandName("Test")]
         public void TestMethod()
         {
-            ReplyAsync("Test");
-            var res = NextMessageAsync().Result;
-            ReplyAsync(res.Content);
+            var restUserMessage = ReplyAsync("Test").Result;
+            var res = NextEmojiAsync(restUserMessage, new IEmote[]{new Emoji("🇾")}).Result;
+            ReplyAsync(res.Name);
         }
     }
 }

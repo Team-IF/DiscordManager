@@ -93,7 +93,7 @@ namespace DiscordManager.Command
             _commands = commands;
         }
 
-        public static async void ExecuteCommand(SocketMessage message, string commandName, string[] args, params object[] param)
+        public static async void ExecuteCommand(SocketMessage message, string commandName, params object[] param)
         {
             var valuePair = GetCommand(commandName);
             if (valuePair == null)
@@ -131,9 +131,9 @@ namespace DiscordManager.Command
                     }
                 }
 
-                await _commandLogger.InfoAsync($"Command Execute : {service.Name}").ConfigureAwait(false);
+                await _commandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
                 baseClass.SetMessage(message);
-                service.Invoke(baseClass, new object[] {args, param});
+                service.Invoke(baseClass, service.GetParameters().Length == 0 ? null : param);
             });
             try
             {
