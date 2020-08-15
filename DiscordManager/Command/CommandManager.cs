@@ -37,7 +37,7 @@ namespace DiscordManager.Command
 
     private static bool PermCheck<T>(this T source, SocketMessage e) where T : CommandWrapper
     {
-      return PermissionFilter(Events.Permission?.Invoke(e) ?? GetPermission(e), source.Permission);
+      return PermissionFilter(DiscordManager.Manager.Permission?.Invoke(e) ?? GetPermission(e), source.Permission);
     }
 
     private static Permission GetPermission(SocketMessage e)
@@ -54,14 +54,12 @@ namespace DiscordManager.Command
     {
       var assembly = AppDomain.CurrentDomain.GetAssemblies();
       var types = assembly.SelectMany(s => s.GetTypes())
-        .Where(p => !p.IsAbstract && typeof(CommandModule).IsAssignableFrom(p))
+        .Where(p => !p.IsAbstract && p.IsClass && typeof(CommandModule).IsAssignableFrom(p))
         .ToList();
       var commands = new Dictionary<Context, IReadOnlyCollection<CommandWrapper>>();
       for (var i = 0; i < types.Count; i++)
       {
         var type = types[i];
-        if (!type.IsClass)
-          continue;
         var methods = type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
         var nameList = new List<string[]>();
         var list = new List<CommandWrapper>();
@@ -99,15 +97,16 @@ namespace DiscordManager.Command
       var valuePair = GetCommand(commandName);
       if (valuePair == null)
         return;
+      var channel = message.Channel;
       var command = valuePair.Value.Value;
       switch (command.Usage)
       {
         case Usage.Guild:
-          if (!(message.Channel is SocketGuildChannel))
+          if (!(channel is SocketGuildChannel))
             return;
           break;
         case Usage.DM:
-          if (!(message.Channel is SocketDMChannel))
+          if (!(channel is SocketDMChannel))
             return;
           break;
         case Usage.ALL:
@@ -115,7 +114,6 @@ namespace DiscordManager.Command
       }
 
       var baseClass = valuePair.Value.Key;
-      var channel = message.Channel;
       var task = Task.Run(async () =>
       {
         if (!command.PermCheck(message)) return;
@@ -132,9 +130,8 @@ namespace DiscordManager.Command
             return;
           }
         }
-
-        await _commandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
         baseClass.SetMessage(message);
+        await _commandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
         try
         {
           var parameters = service.GetParameters();

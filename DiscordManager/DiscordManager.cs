@@ -15,12 +15,14 @@ namespace DiscordManager
   /// </summary>
   public class DiscordManager : Events
   {
+    internal static DiscordManager Manager { get; private set; }
     private readonly Game Activity;
     private readonly string Prefix;
     private readonly int[]? ShardIds;
     private readonly UserStatus Status;
     private readonly TokenType TokenType;
     private readonly int? TotalShard;
+    public BaseSocketClient Client { get; }
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
@@ -47,9 +49,10 @@ namespace DiscordManager
         CommandManager.LoadCommands(Client);
         Client.MessageReceived += Command ?? ClientOnMessageReceived;
       }
+
+      Manager = this;
     }
 
-    public BaseSocketClient Client { get; }
 
     private async Task ClientOnMessageReceived(SocketMessage arg)
     {

@@ -8,13 +8,11 @@ namespace DiscordManager.Event
 {
   public abstract class Events
   {
-    public static Func<SocketMessage, Permission> Permission;
     internal readonly Logger _clientLogger;
 
     internal readonly Event<Func<LogObject, Task>> _log = new Event<Func<LogObject, Task>>();
     internal readonly LogManager LogManager;
 
-    public Func<SocketMessage, Task> Command;
 
     internal Events(LogLevel level)
     {
@@ -29,5 +27,8 @@ namespace DiscordManager.Event
       add => _log.Add(value);
       remove => _log.Remove(value);
     }
+    
+    public Func<SocketMessage, Permission> Permission;
+    public Func<SocketMessage, Task> Command;
   }
 }
