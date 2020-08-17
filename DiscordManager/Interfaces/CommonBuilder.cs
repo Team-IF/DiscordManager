@@ -22,6 +22,16 @@ namespace DiscordManager.Interfaces
       Option.Prefix = prefix;
       return (T) this;
     }
+    
+    /// <summary>
+    ///   Use the Config in DiscordManager
+    /// </summary>
+    public T WithConfig(string path)
+    {
+      Option.UseConfig = true;
+      Option.Path = path;
+      return (T) this;
+    }
 
     /// <summary>
     ///   Set LogLevel(NONE,INFO, ERROR, CRITICAL,DEBUG, ALL)

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord.WebSocket;
-using DiscordManager.Event;
+using DiscordManager.Config;
 using DiscordManager.Logging;
 
 namespace DiscordManager.Command
 {
   public static class CommandManager
   {
-    internal static Logger _commandLogger;
+    private static readonly Logger CommandLogger = DiscordManager.Manager.LogManager.CreateLogger("Command Manager (CM)");
     private static IReadOnlyDictionary<Context, IReadOnlyCollection<CommandWrapper>> _commands;
 
     private static KeyValuePair<Context, CommandWrapper>? GetCommand(string commandName)
@@ -37,11 +37,16 @@ namespace DiscordManager.Command
 
     private static bool PermCheck<T>(this T source, SocketMessage e) where T : CommandWrapper
     {
-      return PermissionFilter(DiscordManager.Manager.Permission?.Invoke(e) ?? GetPermission(e), source.Permission);
+      return PermissionFilter(GetPermission(e), source.Permission);
     }
 
     private static Permission GetPermission(SocketMessage e)
     {
+      if (e.Author.Id == DiscordManager.Manager.ConfigManager.Get<Common>().Owner)
+        return Permission.Owner;
+      var customPerm = DiscordManager.Manager.Permission;
+      if (customPerm != null)
+        return customPerm.Invoke(e);
       if (e.Author is SocketGuildUser guildUser)
         return guildUser.Roles.Any(role => role.Permissions.Administrator)
           ? Permission.Admin
@@ -131,7 +136,7 @@ namespace DiscordManager.Command
           }
         }
         baseClass.SetMessage(message);
-        await _commandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
+        await CommandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
         try
         {
           var parameters = service.GetParameters();
@@ -148,7 +153,7 @@ namespace DiscordManager.Command
       }
       catch
       {
-        await _commandLogger.ErrorAsync("Error At Executing Command", task.Exception);
+        await CommandLogger.ErrorAsync("Error At Executing Command", task.Exception);
       }
     }
   }

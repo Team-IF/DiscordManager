@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using DiscordManager.Command;
+using DiscordManager.Config;
 using DiscordManager.Event;
 using DiscordManager.Logging;
 
@@ -22,11 +23,14 @@ namespace DiscordManager
     private readonly UserStatus Status;
     private readonly TokenType TokenType;
     private readonly int? TotalShard;
+    private string Token;
+    public readonly ConfigManager ConfigManager;
     public BaseSocketClient Client { get; }
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
-      TokenType = option.Type;
+      Manager = this;
+      TokenType = BuildOption.Type;
       TotalShard = option.Shards;
       ShardIds = option.ShardIds;
       Client = option.Client;
@@ -43,14 +47,22 @@ namespace DiscordManager
           Client = new DiscordSocketClient(socketConfig);
       }
 
+      if (option.UseConfig)
+      {
+        LoaderConfig.Path = option.Path;
+        ConfigManager = new ConfigManager();
+        ConfigManager.Load().ConfigureAwait(false);
+        var config = ConfigManager.Get<Common>();
+        Prefix = config.Prefix;
+        Token = config.Token;
+      }
+      
       if (option.UseCommandModule)
       {
         _clientLogger.DebugAsync("Load CommandModules...");
         CommandManager.LoadCommands(Client);
         Client.MessageReceived += Command ?? ClientOnMessageReceived;
       }
-
-      Manager = this;
     }
 
 
@@ -95,6 +107,8 @@ namespace DiscordManager
       await Client.LoginAsync(TokenType, token).ConfigureAwait(false);
       await Client.StartAsync().ConfigureAwait(false);
 
+      Token = null;
+
       await Client.SetStatusAsync(Status);
       if (Activity != null)
         await Client.SetActivityAsync(Activity);
@@ -107,11 +121,11 @@ namespace DiscordManager
         _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));
     }
 
-    public void Run(string token)
+    public void Run(string token = null)
     {
       try
       {
-        Init(token).GetAwaiter().GetResult();
+        Init(token ?? Token).GetAwaiter().GetResult();
       }
       catch (ManagerException e)
       {

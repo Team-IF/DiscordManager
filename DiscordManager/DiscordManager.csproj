@@ -19,6 +19,7 @@
     <ItemGroup>
       <PackageReference Include="Discord.Net" Version="2.2.0" />
       <PackageReference Include="Discord.Net.Core" Version="2.2.0" />
+      <PackageReference Include="Nett" Version="0.15.0" />
     </ItemGroup>
 
 </Project>

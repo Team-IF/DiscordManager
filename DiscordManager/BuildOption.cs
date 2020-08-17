@@ -14,11 +14,13 @@ namespace DiscordManager
     public BaseSocketClient? Client;
     public Game? Game;
     public LogLevel LogLevel = LogLevel.INFO;
-    public string Prefix;
     public int[]? ShardIds;
     public int? Shards;
     public DiscordSocketConfig? SocketConfig;
-    public TokenType Type = TokenType.Bot;
+    public const TokenType Type = TokenType.Bot;
     public bool UseCommandModule = false;
+    public string Prefix;
+    public bool UseConfig = false;
+    public string Path;
   }
 }

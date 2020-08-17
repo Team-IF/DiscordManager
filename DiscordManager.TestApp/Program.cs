@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord;
-using DiscordManager.Event;
 using DiscordManager.Logging;
 
 namespace DiscordManager.TestApp
@@ -14,11 +13,12 @@ namespace DiscordManager.TestApp
                 .SocketBuilder
                 .WithActivity(new Game("Live For Test"))
                 .WithLogLevel(LogLevel.ALL)
+                .WithConfig("Config")
                 .WithCommandModule()
                 .Build();
 
             discordManager.Log += Log;
-            discordManager.Run("");
+            discordManager.Run();
         }
 
         public static Task Log(LogObject logObject)
