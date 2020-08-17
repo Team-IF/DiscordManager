@@ -7,7 +7,7 @@ using DiscordManager.Logging;
 namespace DiscordManager.Config
 {
   /// <summary>
-  /// Load/Get Config(Json, Toml) Files
+  ///   Load/Get Config(Json, Toml) Files
   /// </summary>
   public class ConfigManager
   {
@@ -31,7 +31,8 @@ namespace DiscordManager.Config
     public void Save()
     {
       lock (_lockOnly)
-        for (int i = 0; i < _configs.Count; i++)
+      {
+        for (var i = 0; i < _configs.Count; i++)
         {
           var (key, value) = _configs.ElementAt(i);
 
@@ -42,6 +43,7 @@ namespace DiscordManager.Config
           else
             TomlLoader.SaveToml(fullName, target).ConfigureAwait(false);
         }
+      }
     }
 
     public void ReLoad()
@@ -49,7 +51,7 @@ namespace DiscordManager.Config
       lock (_lockOnly)
       {
         _configs.Clear();
-      
+
         Load().ConfigureAwait(false);
       }
     }
@@ -60,7 +62,7 @@ namespace DiscordManager.Config
       var types = assembly.SelectMany(s => s.GetTypes())
         .Where(p => p.IsClass && !p.IsAbstract && typeof(IConfig).IsAssignableFrom(p))
         .ToList();
-      for (int i = 0; i < types.Count; i++)
+      for (var i = 0; i < types.Count; i++)
       {
         var type = types[i];
         var typeName = type.Name;
@@ -69,6 +71,7 @@ namespace DiscordManager.Config
           await ConfigLogger.ErrorAsync($"Duplicate setting name : {typeName}");
           continue;
         }
+
         var extension = (Attribute.GetCustomAttribute(type, typeof(ConfigExtension), true) as ConfigExtension)?.Type ??
                         ConfigType.JSON;
         var fullName = $"{typeName}Config.{extension.ToString().ToLower()}";

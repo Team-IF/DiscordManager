@@ -11,7 +11,9 @@ namespace DiscordManager.Command
 {
   public static class CommandManager
   {
-    private static readonly Logger CommandLogger = DiscordManager.Manager.LogManager.CreateLogger("Command Manager (CM)");
+    private static readonly Logger CommandLogger =
+      DiscordManager.Manager.LogManager.CreateLogger("Command Manager (CM)");
+
     private static IReadOnlyDictionary<Context, IReadOnlyCollection<CommandWrapper>> _commands;
 
     private static KeyValuePair<Context, CommandWrapper>? GetCommand(string commandName)
@@ -135,6 +137,7 @@ namespace DiscordManager.Command
             return;
           }
         }
+
         baseClass.SetMessage(message);
         await CommandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
         try

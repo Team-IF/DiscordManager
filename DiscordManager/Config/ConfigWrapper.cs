@@ -2,8 +2,8 @@
 {
   internal class ConfigWrapper
   {
-    public readonly ConfigType Type;
     public readonly object Target;
+    public readonly ConfigType Type;
 
     public ConfigWrapper(ConfigType type, object target)
     {

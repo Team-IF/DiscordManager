@@ -7,7 +7,7 @@ namespace DiscordManager.Config
   internal static class LoaderConfig
   {
     public static string Path;
-    
+
     public static async Task CreateFile(string fileName, Type type, ConfigType configType)
     {
       var fileInfo = new FileInfo($"{Path}/{fileName}");
@@ -17,7 +17,7 @@ namespace DiscordManager.Config
         var instance = Activator.CreateInstance(type);
         if (configType == ConfigType.JSON)
           JsonLoader.SaveJson(fileName, instance, type);
-        else 
+        else
           await TomlLoader.SaveToml(fileName, instance);
       }
     }

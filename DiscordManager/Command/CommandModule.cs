@@ -35,13 +35,11 @@ namespace DiscordManager.Command
       async Task Handler(Cacheable<IUserMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel,
         SocketReaction arg3)
       {
-        if (arg3.MessageId == message.Id && (arg3.UserId ==  Message.Author.Id || catchAny) && emotes.Contains(arg3.Emote)) eventTrigger.SetResult(arg3.Emote);
+        if (arg3.MessageId == message.Id && (arg3.UserId == Message.Author.Id || catchAny) &&
+            emotes.Contains(arg3.Emote)) eventTrigger.SetResult(arg3.Emote);
       }
 
-      for (int i = 0; i < emotes.Length; i++)
-      {
-        _ = message.AddReactionAsync(emotes[i]);
-      }
+      for (var i = 0; i < emotes.Length; i++) _ = message.AddReactionAsync(emotes[i]);
 
       Client.ReactionAdded += Handler;
 

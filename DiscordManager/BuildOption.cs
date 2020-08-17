@@ -7,6 +7,8 @@ namespace DiscordManager
 {
   internal class BuildOption
   {
+    public const TokenType Type = TokenType.Bot;
+
     public static readonly string Version = typeof(BuildOption).Assembly
       .GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
@@ -14,13 +16,12 @@ namespace DiscordManager
     public BaseSocketClient? Client;
     public Game? Game;
     public LogLevel LogLevel = LogLevel.INFO;
+    public string Path;
+    public string Prefix;
     public int[]? ShardIds;
     public int? Shards;
     public DiscordSocketConfig? SocketConfig;
-    public const TokenType Type = TokenType.Bot;
     public bool UseCommandModule = false;
-    public string Prefix;
     public bool UseConfig = false;
-    public string Path;
   }
 }

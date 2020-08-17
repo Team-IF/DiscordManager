@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Discord;
@@ -16,16 +15,14 @@ namespace DiscordManager
   /// </summary>
   public class DiscordManager : Events
   {
-    internal static DiscordManager Manager { get; private set; }
     private readonly Game Activity;
+    public readonly ConfigManager ConfigManager;
     private readonly string Prefix;
     private readonly int[]? ShardIds;
     private readonly UserStatus Status;
     private readonly TokenType TokenType;
     private readonly int? TotalShard;
     private string Token;
-    public readonly ConfigManager ConfigManager;
-    public BaseSocketClient Client { get; }
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
@@ -56,7 +53,7 @@ namespace DiscordManager
         Prefix = config.Prefix;
         Token = config.Token;
       }
-      
+
       if (option.UseCommandModule)
       {
         _clientLogger.DebugAsync("Load CommandModules...");
@@ -64,6 +61,9 @@ namespace DiscordManager
         Client.MessageReceived += Command ?? ClientOnMessageReceived;
       }
     }
+
+    internal static DiscordManager Manager { get; private set; }
+    public BaseSocketClient Client { get; }
 
 
     private async Task ClientOnMessageReceived(SocketMessage arg)

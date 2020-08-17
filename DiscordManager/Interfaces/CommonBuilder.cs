@@ -22,7 +22,7 @@ namespace DiscordManager.Interfaces
       Option.Prefix = prefix;
       return (T) this;
     }
-    
+
     /// <summary>
     ///   Use the Config in DiscordManager
     /// </summary>

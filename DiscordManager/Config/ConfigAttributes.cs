@@ -3,7 +3,7 @@
 namespace DiscordManager.Config
 {
   /// <summary>
-  /// Set Config Extension
+  ///   Set Config Extension
   /// </summary>
   [AttributeUsage(AttributeTargets.Class, Inherited = false)]
   public class ConfigExtension : Attribute
