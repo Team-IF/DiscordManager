@@ -18,7 +18,7 @@ namespace DiscordManager.Service
 
     public object this[string objectName] => _objects.GetValueOrDefault(objectName);
 
-    public T Get<T>() => (T) _objects.GetValueOrDefault(nameof(T));
+    public T Get<T>() => (T) _objects.GetValueOrDefault(typeof(T).Name);
 
     private bool CheckDuplicate(string name) => _objects.ContainsKey(name);
 

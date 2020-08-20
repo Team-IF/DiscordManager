@@ -15,8 +15,10 @@ namespace DiscordManager.TestApp
                 .WithLogLevel(LogLevel.ALL)
                 .WithConfig("Config")
                 .WithCommandModule()
+                .UseObjectService()
                 .Build();
 
+            discordManager.AddObject<TestObj>("test");
             discordManager.Log += Log;
             discordManager.Run();
         }

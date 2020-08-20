@@ -4,6 +4,7 @@ namespace DiscordManager.Command
 {
   public class Context
   {
+    protected DiscordManager Manager => DiscordManager.Manager;
     protected BaseSocketClient Client { get; private set; }
     public SocketMessage Message { get; private set; }
 
