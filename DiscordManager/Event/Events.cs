@@ -12,10 +12,6 @@ namespace DiscordManager.Event
 
     internal readonly Event<Func<LogObject, Task>> _log = new Event<Func<LogObject, Task>>();
     internal readonly LogManager LogManager;
-    public Func<SocketMessage, Task> Command;
-
-    public Func<SocketMessage, Permission> Permission;
-
 
     internal Events(LogLevel level)
     {
@@ -23,7 +19,9 @@ namespace DiscordManager.Event
       LogManager.Message += async msg => await _log.Invoke(msg).ConfigureAwait(false);
       _clientLogger = LogManager.CreateLogger("Discord Manager (DM)");
     }
-
+    
+    public Func<SocketMessage, Task> Command;
+    public Func<SocketMessage, Permission> Permission;
     public event Func<LogObject, Task> Log
     {
       add => _log.Add(value);

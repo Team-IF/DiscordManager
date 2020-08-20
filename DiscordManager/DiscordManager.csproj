@@ -3,7 +3,8 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Version>0.1.4</Version>
+        <VersionPrefix>0.1.5</VersionPrefix>
+        <VersionSuffix>dev</VersionSuffix>
         <PackageId>DiscordManager</PackageId>
         <PackageTags>Discord</PackageTags>
         <Title>DiscordManager</Title>
@@ -12,6 +13,7 @@
         <Configurations>Debug;Release</Configurations>
         <RepositoryUrl>https://github.com/Team-IF/DiscordManager</RepositoryUrl>
         <PackageProjectUrl>https://github.com/Team-IF/DiscordManager</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/Team-IF/DiscordManager/blob/master/LICENSE</PackageLicenseUrl>
         <Platforms>AnyCPU</Platforms>
         <Nullable>enable</Nullable>
     </PropertyGroup>

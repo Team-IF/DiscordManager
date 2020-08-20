@@ -92,6 +92,12 @@ namespace DiscordManager.Interfaces
       return (T) this;
     }
 
+    public T UseObjectService()
+    {
+      Option.UseObjectService = true;
+      return (T) this;
+    }
+
     /// <summary>
     ///   Can set the DiscordClient for the bot
     ///   <example>

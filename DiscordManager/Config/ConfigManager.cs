@@ -6,10 +6,7 @@ using DiscordManager.Logging;
 
 namespace DiscordManager.Config
 {
-  /// <summary>
-  ///   Load/Get Config(Json, Toml) Files
-  /// </summary>
-  public class ConfigManager
+  internal class ConfigManager
   {
     private static readonly Logger ConfigLogger = DiscordManager.Manager.LogManager.CreateLogger("Config Loader (CL)");
     private readonly Dictionary<string, ConfigWrapper> _configs;
@@ -27,6 +24,8 @@ namespace DiscordManager.Config
       var config = _configs.GetValueOrDefault(typeof(T).Name);
       return (T) config.Target;
     }
+
+    public object Get(object obj) => _configs.GetValueOrDefault(nameof(obj));
 
     public void Save()
     {

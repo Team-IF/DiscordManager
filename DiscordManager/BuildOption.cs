@@ -7,8 +7,6 @@ namespace DiscordManager
 {
   internal class BuildOption
   {
-    public const TokenType Type = TokenType.Bot;
-
     public static readonly string Version = typeof(BuildOption).Assembly
       .GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
@@ -23,5 +21,6 @@ namespace DiscordManager
     public DiscordSocketConfig? SocketConfig;
     public bool UseCommandModule = false;
     public bool UseConfig = false;
+    public bool UseObjectService = false;
   }
 }

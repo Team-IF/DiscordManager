@@ -11,7 +11,7 @@ namespace DiscordManager.Logging
     public LogManager(LogLevel logLevel)
     {
       LogLevel = logLevel;
-      _privateLogger = new Logger(this, "Discord Manager");
+      _privateLogger = new Logger(this, "Discord Manager (CM)");
     }
 
     private Logger _privateLogger { get; }

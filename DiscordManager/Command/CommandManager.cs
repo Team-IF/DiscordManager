@@ -44,7 +44,7 @@ namespace DiscordManager.Command
 
     private static Permission GetPermission(SocketMessage e)
     {
-      if (e.Author.Id == DiscordManager.Manager.ConfigManager.Get<Common>().Owner)
+      if (e.Author.Id == DiscordManager.Manager.GetConfig<Common>().Owner)
         return Permission.Owner;
       var customPerm = DiscordManager.Manager.Permission;
       if (customPerm != null)
@@ -147,7 +147,7 @@ namespace DiscordManager.Command
         }
         catch (Exception e)
         {
-          throw e;
+          throw;
         }
       });
       try

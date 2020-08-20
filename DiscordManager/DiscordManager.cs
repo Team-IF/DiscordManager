@@ -7,6 +7,7 @@ using DiscordManager.Command;
 using DiscordManager.Config;
 using DiscordManager.Event;
 using DiscordManager.Logging;
+using DiscordManager.Service;
 
 namespace DiscordManager
 {
@@ -16,18 +17,16 @@ namespace DiscordManager
   public class DiscordManager : Events
   {
     private readonly Game Activity;
-    public readonly ConfigManager ConfigManager;
-    private readonly string Prefix;
+    private readonly ConfigManager _configManager;
     private readonly int[]? ShardIds;
     private readonly UserStatus Status;
-    private readonly TokenType TokenType;
     private readonly int? TotalShard;
-    private string Token;
+    private readonly ObjectService _objectService;
+    public readonly string Prefix;
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
       Manager = this;
-      TokenType = BuildOption.Type;
       TotalShard = option.Shards;
       ShardIds = option.ShardIds;
       Client = option.Client;
@@ -47,11 +46,10 @@ namespace DiscordManager
       if (option.UseConfig)
       {
         LoaderConfig.Path = option.Path;
-        ConfigManager = new ConfigManager();
-        ConfigManager.Load().ConfigureAwait(false);
-        var config = ConfigManager.Get<Common>();
+        _configManager = new ConfigManager();
+        _configManager.Load().ConfigureAwait(false);
+        var config = GetConfig<Common>();
         Prefix = config.Prefix;
-        Token = config.Token;
       }
 
       if (option.UseCommandModule)
@@ -60,11 +58,13 @@ namespace DiscordManager
         CommandManager.LoadCommands(Client);
         Client.MessageReceived += Command ?? ClientOnMessageReceived;
       }
+      
+      if (option.UseObjectService)
+        _objectService = new ObjectService();
     }
 
     internal static DiscordManager Manager { get; private set; }
     public BaseSocketClient Client { get; }
-
 
     private async Task ClientOnMessageReceived(SocketMessage arg)
     {
@@ -80,7 +80,7 @@ namespace DiscordManager
       CommandManager.ExecuteCommand(arg, commandName, new object[] {splitContent});
     }
 
-    private async Task Init(string token)
+    private async Task Init(string token, TokenType type)
     {
       await _clientLogger.InfoAsync("Discord Manager Initialize....").ConfigureAwait(false);
       await LogManager.PrintVersion().ConfigureAwait(false);
@@ -92,7 +92,7 @@ namespace DiscordManager
       await _clientLogger.DebugAsync("Check Token is Validated").ConfigureAwait(false);
       try
       {
-        TokenUtils.ValidateToken(TokenType, token);
+        TokenUtils.ValidateToken(type, token);
       }
       catch (Exception e)
       {
@@ -104,10 +104,8 @@ namespace DiscordManager
       await _clientLogger.DebugAsync("Register Events...").ConfigureAwait(false);
       RegisterEvents();
       await _clientLogger.DebugAsync("Successfully Register Events").ConfigureAwait(false);
-      await Client.LoginAsync(TokenType, token).ConfigureAwait(false);
+      await Client.LoginAsync(type, token).ConfigureAwait(false);
       await Client.StartAsync().ConfigureAwait(false);
-
-      Token = null;
 
       await Client.SetStatusAsync(Status);
       if (Activity != null)
@@ -121,11 +119,20 @@ namespace DiscordManager
         _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));
     }
 
-    public void Run(string token = null)
+    public void AddObject<T>(params object[] obj)
+    {
+      _objectService.Add<T>(obj);
+    }
+    public T GetObject<T>() => _objectService.Get<T>();
+
+    public T GetConfig<T>() where T : IConfig => _configManager.Get<T>();
+    public object GetConfig(object obj) => _configManager.Get(obj);
+
+    public void Run(string token = null, TokenType type = TokenType.Bot)
     {
       try
       {
-        Init(token ?? Token).GetAwaiter().GetResult();
+        Init(token ?? _configManager.Get<Common>().Token, type).GetAwaiter().GetResult();
       }
       catch (ManagerException e)
       {
