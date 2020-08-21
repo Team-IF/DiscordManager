@@ -147,6 +147,7 @@ namespace DiscordManager.Command
         }
         catch (Exception e)
         {
+          await CommandLogger.ErrorAsync("Error At Executing Command", e);
           throw;
         }
       });
