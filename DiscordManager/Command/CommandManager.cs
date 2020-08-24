@@ -99,6 +99,19 @@ namespace DiscordManager.Command
       _commands = commands;
     }
 
+    public static List<CommandInfo> GetAllCommands()
+    {
+      var list = new List<CommandInfo>();
+      for (int i = 0; i < _commands.Count; i++)
+      {
+        var (key, value) = _commands.ElementAt(i);
+        list.AddRange(value.Select(e => new CommandInfo(key.GetType().Name, e.MethodInfo.Name, 
+          e.CommandName, e.Permission, e.Usage)));
+      }
+
+      return list;
+    }
+
     public static async void ExecuteCommand(SocketMessage message, string commandName, params object[] param)
     {
       var valuePair = GetCommand(commandName);

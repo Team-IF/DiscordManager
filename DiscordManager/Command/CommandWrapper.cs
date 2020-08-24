@@ -6,7 +6,7 @@ namespace DiscordManager.Command
 {
   internal class CommandWrapper
   {
-    private readonly string[] _commandName;
+    internal readonly string[] CommandName;
     public readonly GuildPermission[]? BotPermission;
     public readonly MethodInfo MethodInfo;
     public readonly Permission Permission;
@@ -15,7 +15,7 @@ namespace DiscordManager.Command
     public CommandWrapper(CommandName commandName, Usage usage, RequirePermission? permission,
       RequireBotPermission? botPermission, MethodInfo info)
     {
-      _commandName = commandName.Names;
+      CommandName = commandName.Names;
       Usage = usage;
       Permission = permission?.Permission ?? Permission.User;
       BotPermission = botPermission?.Permissions;
@@ -24,7 +24,7 @@ namespace DiscordManager.Command
 
     public bool Contains(string name)
     {
-      return _commandName.Contains(name);
+      return CommandName.Contains(name);
     }
 
     /// <summary>
