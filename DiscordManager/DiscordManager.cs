@@ -97,7 +97,7 @@ namespace DiscordManager
       catch (Exception e)
       {
         throw new ManagerException(
-          "Token is Invalid. The token must be Validated");
+          "Token is Invalid. The token must be Validated", e);
       }
 
       await _clientLogger.DebugAsync("Successfully Check Token").ConfigureAwait(false);
