@@ -119,11 +119,12 @@ namespace DiscordManager
         _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));
     }
 
-    public void AddObject<T>(params object[] obj)
-    {
-      _objectService.Add<T>(obj);
-    }
+    public void AddObject(object obj) => _objectService.Add(obj);
+    public void AddObject<T>(params object[] obj) => _objectService.Add<T>(obj);
+    public void AddObject<T>() => _objectService.Add<T>();
     public T GetObject<T>() => _objectService.Get<T>();
+    public void RemoveObject<T>() => _objectService.Remove<T>();
+    public void RemoveObject(object obj) => _objectService.Remove(obj);
 
     public T GetConfig<T>() where T : IConfig => _configManager.Get<T>();
     public object GetConfig(object obj) => _configManager.Get(obj);

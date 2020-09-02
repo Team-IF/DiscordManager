@@ -39,7 +39,7 @@ namespace DiscordManager.Service
 
       _objects.Add(type.Name, obj);
     }
-
+    
     public void Add<T>()
     {
       Add<T>(null);
@@ -60,5 +60,8 @@ namespace DiscordManager.Service
       var instance = info.Invoke(args);
       _objects.Add(type.Name, instance);
     }
+
+    public void Remove<T>() => _objects.Remove(typeof(T).Name);
+    public void Remove(object obj) => _objects.Remove(obj.GetType().Name);
   }
 }
