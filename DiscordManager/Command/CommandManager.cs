@@ -80,7 +80,7 @@ namespace DiscordManager.Command
 
           if (commandName.Names.Any(name => nameList.Any(names => names.Contains(name))))
             throw new ManagerException($"{method.Name} has Overlap CommandName");
-          ;
+          var commandGroup = Attribute.GetCustomAttribute(method, typeof(CommandGroup), true) as CommandGroup;
           var botPermission =
             Attribute.GetCustomAttribute(method, typeof(RequireBotPermission), true) as RequireBotPermission;
           var requirePermission =
@@ -88,7 +88,7 @@ namespace DiscordManager.Command
           var usage =
             ((CommandUsage) Attribute.GetCustomAttribute(method, typeof(CommandUsage), true))?.Usage ?? Usage.ALL;
 
-          list.Add(new CommandWrapper(commandName, usage, requirePermission, botPermission, method));
+          list.Add(new CommandWrapper(commandName, usage, requirePermission, botPermission, method, commandGroup));
         }
 
         var construct = (Context) Activator.CreateInstance(type);
@@ -99,20 +99,28 @@ namespace DiscordManager.Command
       _commands = commands;
     }
 
-    public static List<CommandInfo> GetAllCommands()
+    public static Dictionary<string, List<CommandInfo>> GetAllCommands()
     {
-      var list = new List<CommandInfo>();
-      for (int i = 0; i < _commands.Count; i++)
+      var dict = new Dictionary<string, List<CommandInfo>>();
+      for (var i = 0; i < _commands.Count; i++)
       {
         var (key, value) = _commands.ElementAt(i);
-        list.AddRange(value.Select(e => new CommandInfo(key.GetType().Name, e.MethodInfo.Name, 
-          e.CommandName, e.Permission, e.Usage)));
+        for (var j = 0; j < value.Count; j++)
+        {
+          var wrapper = value.ElementAt(j);
+          var groupName = wrapper.CommandGroup != null ? wrapper.CommandGroup.Group : "Generic";
+          if (!dict.TryGetValue(groupName, out var infos))
+            infos = new List<CommandInfo>();
+          infos.Add(new CommandInfo(key.GetType().Name, wrapper.MethodInfo.Name,
+            wrapper.CommandName, wrapper.Permission, wrapper.Usage));
+          dict[groupName] = infos;
+        }
       }
 
-      return list;
+      return dict;
     }
 
-    public static async void ExecuteCommand(SocketMessage message, string commandName, params object[] param)
+    public static async void ExecuteCommand(SocketMessage message, string commandName)
     {
       var valuePair = GetCommand(commandName);
       if (valuePair == null)
@@ -152,17 +160,36 @@ namespace DiscordManager.Command
         }
 
         baseClass.SetMessage(message);
+        var parameters = service.GetParameters();
+        var param = new List<object>();
+        if (parameters.Length != 0)
+        {
+          var splitContent = message.Content.Split(' ').Skip(1).ToArray();
+          for (var i = 0; i < parameters.Length; i++)
+          {
+            var parameter = parameters[i];
+            var content = splitContent[i];
+            object converted;
+            try
+            {
+              converted = parameter.ParameterType == typeof(string)
+                ? content
+                : Convert.ChangeType(content, parameter.ParameterType);
+            }
+            catch (Exception e)
+            {
+              if (!parameter.HasDefaultValue)
+                throw new ManagerException("Can't Convert Type", e);
+
+              converted = parameter.DefaultValue;
+            }
+
+            param.Add(converted);
+          }
+        }
+
+        service.Invoke(baseClass, param.Count == 0 ? null : param.ToArray());
         await CommandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
-        try
-        {
-          var parameters = service.GetParameters();
-          service.Invoke(baseClass, parameters.Length == 0 ? null : param);
-        }
-        catch (Exception e)
-        {
-          await CommandLogger.ErrorAsync("Error At Executing Command", e);
-          throw;
-        }
       });
       try
       {
@@ -170,7 +197,7 @@ namespace DiscordManager.Command
       }
       catch
       {
-        await CommandLogger.ErrorAsync("Error At Executing Command", task.Exception);
+        await CommandLogger.DebugAsync("Error At Executing Command", task.Exception);
       }
     }
   }

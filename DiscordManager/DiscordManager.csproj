@@ -3,8 +3,8 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <VersionPrefix>0.1.6</VersionPrefix>
-        <VersionSuffix></VersionSuffix>
+        <VersionPrefix>0.1.7</VersionPrefix>
+        <VersionSuffix>dev</VersionSuffix>
         <PackageId>DiscordManager</PackageId>
         <PackageTags>Discord</PackageTags>
         <Title>DiscordManager</Title>
@@ -16,7 +16,6 @@
         <PackageLicenseUrl>https://github.com/Team-IF/DiscordManager/blob/master/LICENSE</PackageLicenseUrl>
         <Platforms>AnyCPU</Platforms>
         <Nullable>enable</Nullable>
-        <PackageVersion>0.1.6</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>

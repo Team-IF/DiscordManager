@@ -5,10 +5,10 @@ namespace DiscordManager.TestApp
 {
     public class Test : CommandModule
     {
-        [CommandName("Test"), RequirePermission(Permission.Admin)]
-        public async void TestMethod(string[] args)
+        [CommandName("Test"), RequirePermission(Permission.User)]
+        public async void TestMethod(int args)
         {
-            await ReplyAsync(Manager.GetObject<TestObj>().Yea);
+            await ReplyAsync(args.ToString());
         }
     }
 }

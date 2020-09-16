@@ -3,8 +3,8 @@
   public class CommandInfo
   {
     public readonly string ClassName;
-    public readonly string MethodName;
     public readonly string[] CommandNames;
+    public readonly string MethodName;
     public readonly Permission Permission;
     public readonly Usage Usage;
 

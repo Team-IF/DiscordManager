@@ -16,13 +16,13 @@ namespace DiscordManager
   /// </summary>
   public class DiscordManager : Events
   {
-    private readonly Game Activity;
     private readonly ConfigManager _configManager;
+    private readonly ObjectService _objectService;
+    private readonly Game Activity;
+    public readonly string Prefix;
     private readonly int[]? ShardIds;
     private readonly UserStatus Status;
     private readonly int? TotalShard;
-    private readonly ObjectService _objectService;
-    public readonly string Prefix;
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
@@ -58,7 +58,7 @@ namespace DiscordManager
         CommandManager.LoadCommands(Client);
         Client.MessageReceived += Command ?? ClientOnMessageReceived;
       }
-      
+
       if (option.UseObjectService)
         _objectService = new ObjectService();
     }
@@ -77,7 +77,7 @@ namespace DiscordManager
       var firstWord = splitContent[0];
       if (!firstWord.StartsWith(Prefix)) return;
       var commandName = firstWord.Substring(Prefix.Length);
-      CommandManager.ExecuteCommand(arg, commandName, new object[] {splitContent});
+      CommandManager.ExecuteCommand(arg, commandName);
     }
 
     private async Task Init(string token, TokenType type)
@@ -119,15 +119,45 @@ namespace DiscordManager
         _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));
     }
 
-    public void AddObject(object obj) => _objectService.Add(obj);
-    public void AddObject<T>(params object[] obj) => _objectService.Add<T>(obj);
-    public void AddObject<T>() => _objectService.Add<T>();
-    public T GetObject<T>() => _objectService.Get<T>();
-    public void RemoveObject<T>() => _objectService.Remove<T>();
-    public void RemoveObject(object obj) => _objectService.Remove(obj);
+    public void AddObject(object obj)
+    {
+      _objectService.Add(obj);
+    }
 
-    public T GetConfig<T>() where T : IConfig => _configManager.Get<T>();
-    public object GetConfig(object obj) => _configManager.Get(obj);
+    public void AddObject<T>(params object[] obj)
+    {
+      _objectService.Add<T>(obj);
+    }
+
+    public void AddObject<T>()
+    {
+      _objectService.Add<T>();
+    }
+
+    public T GetObject<T>()
+    {
+      return _objectService.Get<T>();
+    }
+
+    public void RemoveObject<T>()
+    {
+      _objectService.Remove<T>();
+    }
+
+    public void RemoveObject(object obj)
+    {
+      _objectService.Remove(obj);
+    }
+
+    public T GetConfig<T>() where T : IConfig
+    {
+      return _configManager.Get<T>();
+    }
+
+    public object GetConfig(object obj)
+    {
+      return _configManager.Get(obj);
+    }
 
     public void Run(string token = null, TokenType type = TokenType.Bot)
     {

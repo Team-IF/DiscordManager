@@ -7,8 +7,8 @@ namespace DiscordManager.Service
 {
   internal class ObjectService
   {
-    private readonly Dictionary<string, object> _objects;
     private readonly Logger _logger;
+    private readonly Dictionary<string, object> _objects;
 
     public ObjectService()
     {
@@ -18,9 +18,15 @@ namespace DiscordManager.Service
 
     public object this[string objectName] => _objects.GetValueOrDefault(objectName);
 
-    public T Get<T>() => (T) _objects.GetValueOrDefault(typeof(T).Name);
+    public T Get<T>()
+    {
+      return (T) _objects.GetValueOrDefault(typeof(T).Name);
+    }
 
-    private bool CheckDuplicate(string name) => _objects.ContainsKey(name);
+    private bool CheckDuplicate(string name)
+    {
+      return _objects.ContainsKey(name);
+    }
 
     public void Add(object obj)
     {
@@ -39,7 +45,7 @@ namespace DiscordManager.Service
 
       _objects.Add(type.Name, obj);
     }
-    
+
     public void Add<T>()
     {
       Add<T>(null);
@@ -61,7 +67,14 @@ namespace DiscordManager.Service
       _objects.Add(type.Name, instance);
     }
 
-    public void Remove<T>() => _objects.Remove(typeof(T).Name);
-    public void Remove(object obj) => _objects.Remove(obj.GetType().Name);
+    public void Remove<T>()
+    {
+      _objects.Remove(typeof(T).Name);
+    }
+
+    public void Remove(object obj)
+    {
+      _objects.Remove(obj.GetType().Name);
+    }
   }
 }

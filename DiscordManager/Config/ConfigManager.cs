@@ -25,7 +25,10 @@ namespace DiscordManager.Config
       return (T) config.Target;
     }
 
-    public object Get(object obj) => _configs.GetValueOrDefault(nameof(obj));
+    public object Get(object obj)
+    {
+      return _configs.GetValueOrDefault(nameof(obj));
+    }
 
     public void Save()
     {

@@ -6,20 +6,22 @@ namespace DiscordManager.Command
 {
   internal class CommandWrapper
   {
-    internal readonly string[] CommandName;
     public readonly GuildPermission[]? BotPermission;
+    public readonly CommandGroup CommandGroup;
+    public readonly string[] CommandName;
     public readonly MethodInfo MethodInfo;
     public readonly Permission Permission;
     public readonly Usage Usage;
 
     public CommandWrapper(CommandName commandName, Usage usage, RequirePermission? permission,
-      RequireBotPermission? botPermission, MethodInfo info)
+      RequireBotPermission? botPermission, MethodInfo info, CommandGroup commandGroup)
     {
       CommandName = commandName.Names;
       Usage = usage;
       Permission = permission?.Permission ?? Permission.User;
       BotPermission = botPermission?.Permissions;
       MethodInfo = info;
+      CommandGroup = commandGroup;
     }
 
     public bool Contains(string name)

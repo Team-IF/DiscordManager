@@ -19,6 +19,21 @@ namespace DiscordManager.Command
   }
 
   /// <summary>
+  ///   Use For Command Method
+  ///   Set Command Group for Infos
+  /// </summary>
+  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+  public class CommandGroup : Attribute
+  {
+    internal readonly string Group;
+
+    public CommandGroup(string group)
+    {
+      Group = group;
+    }
+  }
+
+  /// <summary>
   ///   Use For Command Usage
   ///   Can set where to use the command
   /// </summary>
