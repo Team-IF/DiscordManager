@@ -16,29 +16,30 @@ namespace DiscordManager
   /// </summary>
   public class DiscordManager : Events
   {
+    public readonly string Prefix;
     private readonly ConfigManager _configManager;
     private readonly ObjectService _objectService;
-    private readonly Game Activity;
-    public readonly string Prefix;
-    private readonly int[]? ShardIds;
-    private readonly UserStatus Status;
-    private readonly int? TotalShard;
+    private readonly Game _activity;
+    private readonly int[]? _shardIds;
+    private readonly UserStatus _status;
+    private bool _useCommandModule;
+    private readonly int? _totalShard;
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
       Manager = this;
-      TotalShard = option.Shards;
-      ShardIds = option.ShardIds;
+      _totalShard = option.Shards;
+      _shardIds = option.ShardIds;
       Client = option.Client;
-      Status = option.BotStatus;
-      Activity = option.Game;
+      _status = option.BotStatus;
+      _activity = option.Game;
       Prefix = option.Prefix;
       if (Client == null)
       {
         var socketConfig = option.SocketConfig ?? new DiscordSocketConfig
-          {MessageCacheSize = 100, TotalShards = TotalShard};
-        if (TotalShard.HasValue)
-          Client = new DiscordShardedClient(ShardIds, socketConfig);
+          {MessageCacheSize = 100, TotalShards = _totalShard};
+        if (_totalShard.HasValue)
+          Client = new DiscordShardedClient(_shardIds, socketConfig);
         else
           Client = new DiscordSocketClient(socketConfig);
       }
@@ -52,15 +53,10 @@ namespace DiscordManager
         Prefix = config.Prefix;
       }
 
-      if (option.UseCommandModule)
-      {
-        _clientLogger.DebugAsync("Load CommandModules...");
-        CommandManager.LoadCommands(Client);
-        Client.MessageReceived += Command ?? ClientOnMessageReceived;
-      }
-
       if (option.UseObjectService)
         _objectService = new ObjectService();
+
+      _useCommandModule = option.UseCommandModule;
     }
 
     internal static DiscordManager Manager { get; private set; }
@@ -82,6 +78,13 @@ namespace DiscordManager
 
     private async Task Init(string token, TokenType type)
     {
+      if (_useCommandModule)
+      {
+        await _clientLogger.DebugAsync("Load CommandModules...");
+        CommandManager.LoadCommands(Client);
+        Client.MessageReceived += Command ?? ClientOnMessageReceived;
+      }
+
       await _clientLogger.InfoAsync("Discord Manager Initialize....").ConfigureAwait(false);
       await LogManager.PrintVersion().ConfigureAwait(false);
       await _clientLogger.DebugAsync("Check Internet is Available").ConfigureAwait(false);
@@ -107,9 +110,9 @@ namespace DiscordManager
       await Client.LoginAsync(type, token).ConfigureAwait(false);
       await Client.StartAsync().ConfigureAwait(false);
 
-      await Client.SetStatusAsync(Status);
-      if (Activity != null)
-        await Client.SetActivityAsync(Activity);
+      await Client.SetStatusAsync(_status);
+      if (_activity != null)
+        await Client.SetActivityAsync(_activity);
       await Task.Delay(-1);
     }
 
