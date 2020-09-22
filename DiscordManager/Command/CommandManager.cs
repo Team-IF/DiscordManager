@@ -161,34 +161,35 @@ namespace DiscordManager.Command
 
         baseClass.SetMessage(message);
         var parameters = service.GetParameters();
-        var param = new List<object>();
+        object[] param = null;
         if (parameters.Length != 0)
         {
+          param = new object[parameters.Length];
           var splitContent = message.Content.Split(' ').Skip(1).ToArray();
-          for (var i = 0; i < parameters.Length; i++)
-          {
-            var parameter = parameters[i];
-            var content = splitContent[i];
-            object converted;
-            try
+          if (splitContent.Length != 0)
+            for (var i = 0; i < parameters.Length; i++)
             {
-              converted = parameter.ParameterType == typeof(string)
-                ? content
-                : Convert.ChangeType(content, parameter.ParameterType);
-            }
-            catch (Exception e)
-            {
-              if (!parameter.HasDefaultValue)
-                throw new ManagerException("Can't Convert Type", e);
+              var parameter = parameters[i];
+              var content = splitContent.GetValue(i);
+              object converted = null;
+              if (content != null)
+                try
+                {
+                  converted = parameter.ParameterType == typeof(string)
+                    ? content
+                    : Convert.ChangeType(content, parameter.ParameterType);
+                }
+                catch (Exception)
+                {
+                  if (parameter.HasDefaultValue)
+                    converted = parameter.DefaultValue;
+                }
 
-              converted = parameter.DefaultValue;
+              param[i] = converted;
             }
-
-            param.Add(converted);
-          }
         }
 
-        service.Invoke(baseClass, param.Count == 0 ? null : param.ToArray());
+        service.Invoke(baseClass, param);
         await CommandLogger.InfoAsync($"Command Method Execute : {service.Name}").ConfigureAwait(false);
       });
       try
