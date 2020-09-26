@@ -191,31 +191,57 @@ namespace DiscordManager.Command
             for (var i = 0; i < parameters.Length; i++)
             {
               var parameter = parameters[i];
+              var parameterType = parameter.ParameterType;
               object converted = null;
-              try
+              var count = i + 1;
+              if (parameterType.IsArray && count == parameters.Length)
               {
-                var content = splitContent.GetValue(i);
-                if (content != null)
+                var elementType = parameterType.GetElementType();
+                var paramArray = splitContent.Skip(i).Where(item =>
+                {
                   try
                   {
-                    if (parameter.ParameterType == typeof(string[]))
-                      converted = splitContent;
-                    else
-                      converted = parameter.ParameterType == typeof(string)
-                        ? content
-                        : Convert.ChangeType(content, parameter.ParameterType);
+                    Convert.ChangeType(item, elementType);
+                    return true;
                   }
                   catch (Exception)
                   {
-                    if (parameter.HasDefaultValue)
-                      converted = parameter.DefaultValue;
                   }
-              }
-              catch (IndexOutOfRangeException)
-              {
-              }
 
-              param[i] = converted;
+                  return false;
+                }).Select(item => Convert.ChangeType(item, elementType)).ToArray();
+                
+                var destinationArray = Array.CreateInstance(elementType, paramArray.Length);
+                Array.Copy(paramArray, destinationArray, paramArray.Length);
+                param[i] = destinationArray;
+              }
+              else
+                try
+                {
+                  var content = splitContent[i];
+                  if (content != null)
+                    try
+                    {
+                      if (parameterType == typeof(string[]))
+                        converted = splitContent;
+                      else if (parameterType.IsEnum)
+                        converted = Enum.Parse(parameterType, content);
+                      else
+                        converted = parameterType == typeof(string)
+                          ? content
+                          : Convert.ChangeType(content, parameterType);
+                    }
+                    catch (Exception)
+                    {
+                      if (parameter.HasDefaultValue)
+                        converted = parameter.DefaultValue;
+                    }
+
+                  param[i] = converted;
+                }
+                catch (IndexOutOfRangeException)
+                {
+                }
             }
         }
 
