@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using DiscordManager.Command;
 using DiscordManager.Config;
 using DiscordManager.Event;
+using DiscordManager.Interfaces;
 using DiscordManager.Logging;
 using DiscordManager.Service;
 
@@ -16,14 +17,13 @@ namespace DiscordManager
   /// </summary>
   public class DiscordManager : Events
   {
-    public readonly string Prefix;
+    private readonly Game _activity;
     private readonly ConfigManager _configManager;
     private readonly ObjectService _objectService;
-    private readonly Game _activity;
     private readonly int[]? _shardIds;
     private readonly UserStatus _status;
-    private bool _useCommandModule;
     private readonly int? _totalShard;
+    public readonly string Prefix;
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
@@ -56,7 +56,12 @@ namespace DiscordManager
       if (option.UseObjectService)
         _objectService = new ObjectService();
 
-      _useCommandModule = option.UseCommandModule;
+      if (option.CommandConfig != null)
+      {
+        _clientLogger.DebugAsync("Load CommandModules...");
+        CommandManager.LoadCommands(Client, option.CommandConfig.HelpArg);
+        Client.MessageReceived += option.CommandConfig.CommandFunc ?? ClientOnMessageReceived;
+      }
     }
 
     internal static DiscordManager Manager { get; private set; }
@@ -78,13 +83,6 @@ namespace DiscordManager
 
     private async Task Init(string token, TokenType type)
     {
-      if (_useCommandModule)
-      {
-        await _clientLogger.DebugAsync("Load CommandModules...");
-        CommandManager.LoadCommands(Client);
-        Client.MessageReceived += Command ?? ClientOnMessageReceived;
-      }
-
       await _clientLogger.InfoAsync("Discord Manager Initialize....").ConfigureAwait(false);
       await LogManager.PrintVersion().ConfigureAwait(false);
       await _clientLogger.DebugAsync("Check Internet is Available").ConfigureAwait(false);
@@ -106,6 +104,7 @@ namespace DiscordManager
       await _clientLogger.DebugAsync("Successfully Check Token").ConfigureAwait(false);
       await _clientLogger.DebugAsync("Register Events...").ConfigureAwait(false);
       RegisterEvents();
+
       await _clientLogger.DebugAsync("Successfully Register Events").ConfigureAwait(false);
       await Client.LoginAsync(type, token).ConfigureAwait(false);
       await Client.StartAsync().ConfigureAwait(false);

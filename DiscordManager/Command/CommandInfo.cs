@@ -8,7 +8,7 @@
     public readonly Permission Permission;
     public readonly Usage Usage;
 
-    public CommandInfo(string className, string methodName, string[] commandNames, Permission permission, Usage usage)
+    internal CommandInfo(string className, string methodName, string[] commandNames, Permission permission, Usage usage)
     {
       ClassName = className;
       MethodName = methodName;

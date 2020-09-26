@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Discord;
 using Discord.WebSocket;
+using DiscordManager.Interfaces;
 using DiscordManager.Logging;
 
 namespace DiscordManager
@@ -12,6 +13,7 @@ namespace DiscordManager
 
     public UserStatus BotStatus = UserStatus.Online;
     public BaseSocketClient? Client;
+    public CommandConfig CommandConfig = null!;
     public Game? Game;
     public LogLevel LogLevel = LogLevel.INFO;
     public string Path;
@@ -19,7 +21,6 @@ namespace DiscordManager
     public int[]? ShardIds;
     public int? Shards;
     public DiscordSocketConfig? SocketConfig;
-    public bool UseCommandModule = false;
     public bool UseConfig = false;
     public bool UseObjectService = false;
   }

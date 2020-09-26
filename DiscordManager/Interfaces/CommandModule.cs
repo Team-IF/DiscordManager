@@ -7,7 +7,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using DiscordManager.Standard;
 
-namespace DiscordManager.Command
+namespace DiscordManager.Interfaces
 {
   /// <summary>
   ///   Use for Command System

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Discord;
-using DiscordManager.Command;
+using DiscordManager.Interfaces;
 
 namespace DiscordManager.Standard
 {

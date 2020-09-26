@@ -1,6 +1,6 @@
 ﻿using Discord.WebSocket;
 
-namespace DiscordManager.Command
+namespace DiscordManager.Interfaces
 {
   public class Context
   {

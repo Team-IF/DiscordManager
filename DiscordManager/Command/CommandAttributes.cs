@@ -3,6 +3,17 @@ using Discord;
 
 namespace DiscordManager.Command
 {
+  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+  public class HelpTarget : Attribute
+  {
+    internal readonly string[] Names;
+
+    public HelpTarget(params string[] commandName)
+    {
+      Names = commandName;
+    }
+  }
+
   /// <summary>
   ///   Use For Command Method
   ///   Set Command Name or Command Names

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using DiscordManager.Config;
+using DiscordManager.Interfaces;
 using DiscordManager.Logging;
 
 namespace DiscordManager.Command
@@ -15,6 +16,8 @@ namespace DiscordManager.Command
       DiscordManager.Manager.LogManager.CreateLogger("Command Manager (CM)");
 
     private static IReadOnlyDictionary<Context, IReadOnlyCollection<CommandWrapper>> _commands;
+    private static IReadOnlyDictionary<string, MethodInfo> _helpCommands;
+    private static string[] _helpArg;
 
     private static KeyValuePair<Context, CommandWrapper>? GetCommand(string commandName)
     {
@@ -44,7 +47,7 @@ namespace DiscordManager.Command
 
     private static Permission GetPermission(SocketMessage e)
     {
-      if (e.Author.Id == DiscordManager.Manager.GetConfig<Common>().Owner)
+      if (DiscordManager.Manager.GetConfig<Common>().Owners.Contains(e.Author.Id))
         return Permission.Owner;
       var customPerm = DiscordManager.Manager.Permission;
       if (customPerm != null)
@@ -57,13 +60,15 @@ namespace DiscordManager.Command
       return Permission.User;
     }
 
-    internal static void LoadCommands(BaseSocketClient client)
+    internal static void LoadCommands(BaseSocketClient client, string[] commandConfigHelpArg)
     {
+      _helpArg = commandConfigHelpArg;
       var assembly = AppDomain.CurrentDomain.GetAssemblies();
       var types = assembly.SelectMany(s => s.GetTypes())
         .Where(p => !p.IsAbstract && p.IsClass && typeof(CommandModule).IsAssignableFrom(p))
         .ToList();
       var commands = new Dictionary<Context, IReadOnlyCollection<CommandWrapper>>();
+      var helpCommands = new Dictionary<string, MethodInfo>();
       for (var i = 0; i < types.Count; i++)
       {
         var type = types[i];
@@ -75,11 +80,24 @@ namespace DiscordManager.Command
           var method = methods[j];
           if (!method.IsPublic)
             continue;
+
           if (!(Attribute.GetCustomAttribute(method, typeof(CommandName), true) is CommandName commandName))
-            throw new ManagerException($"{method.Name} has None CommandName Attribute.");
+            continue;
 
           if (commandName.Names.Any(name => nameList.Any(names => names.Contains(name))))
             throw new ManagerException($"{method.Name} has Overlap CommandName");
+
+          try
+          {
+            var helpMethod = type.GetMethod($"{commandName.Names[0]}_help");
+            if (helpMethod != null) helpCommands[commandName.Names[0]] = helpMethod;
+          }
+          catch (Exception e)
+          {
+            CommandLogger.CriticalAsync("CM(Command Manager) Error", e);
+            throw;
+          }
+
           var commandGroup = Attribute.GetCustomAttribute(method, typeof(CommandGroup), true) as CommandGroup;
           var botPermission =
             Attribute.GetCustomAttribute(method, typeof(RequireBotPermission), true) as RequireBotPermission;
@@ -96,6 +114,7 @@ namespace DiscordManager.Command
         commands.Add(construct, list);
       }
 
+      _helpCommands = helpCommands;
       _commands = commands;
     }
 
@@ -122,29 +141,30 @@ namespace DiscordManager.Command
 
     public static async void ExecuteCommand(SocketMessage message, string commandName)
     {
-      var valuePair = GetCommand(commandName);
-      if (valuePair == null)
-        return;
-      var channel = message.Channel;
-      var command = valuePair.Value.Value;
-      switch (command.Usage)
-      {
-        case Usage.Guild:
-          if (!(channel is SocketGuildChannel))
-            return;
-          break;
-        case Usage.DM:
-          if (!(channel is SocketDMChannel))
-            return;
-          break;
-        case Usage.ALL:
-          break;
-      }
-
-      var baseClass = valuePair.Value.Key;
       var task = Task.Run(async () =>
       {
+        var valuePair = GetCommand(commandName);
+        if (valuePair == null)
+          return;
+        var channel = message.Channel;
+        var baseClass = valuePair.Value.Key;
+        var command = valuePair.Value.Value;
+        switch (command.Usage)
+        {
+          case Usage.Guild:
+            if (!(channel is SocketGuildChannel))
+              return;
+            break;
+          case Usage.DM:
+            if (!(channel is SocketDMChannel))
+              return;
+            break;
+          case Usage.ALL:
+            break;
+        }
+
         if (!command.PermCheck(message)) return;
+        var splitContent = message.Content.Split(' ').Skip(1).ToArray();
         var service = command.MethodInfo;
         var perm = command.BotPermission;
         if (channel is SocketGuildChannel guildChannel && perm != null)
@@ -159,31 +179,41 @@ namespace DiscordManager.Command
           }
         }
 
+        if (_helpArg.Contains(splitContent[0])) service = _helpCommands[command.CommandName[0]];
+
         baseClass.SetMessage(message);
         var parameters = service.GetParameters();
         object[] param = null;
         if (parameters.Length != 0)
         {
           param = new object[parameters.Length];
-          var splitContent = message.Content.Split(' ').Skip(1).ToArray();
           if (splitContent.Length != 0)
             for (var i = 0; i < parameters.Length; i++)
             {
               var parameter = parameters[i];
-              var content = splitContent.GetValue(i);
               object converted = null;
-              if (content != null)
-                try
-                {
-                  converted = parameter.ParameterType == typeof(string)
-                    ? content
-                    : Convert.ChangeType(content, parameter.ParameterType);
-                }
-                catch (Exception)
-                {
-                  if (parameter.HasDefaultValue)
-                    converted = parameter.DefaultValue;
-                }
+              try
+              {
+                var content = splitContent.GetValue(i);
+                if (content != null)
+                  try
+                  {
+                    if (parameter.ParameterType == typeof(string[]))
+                      converted = splitContent;
+                    else
+                      converted = parameter.ParameterType == typeof(string)
+                        ? content
+                        : Convert.ChangeType(content, parameter.ParameterType);
+                  }
+                  catch (Exception)
+                  {
+                    if (parameter.HasDefaultValue)
+                      converted = parameter.DefaultValue;
+                  }
+              }
+              catch (IndexOutOfRangeException)
+              {
+              }
 
               param[i] = converted;
             }

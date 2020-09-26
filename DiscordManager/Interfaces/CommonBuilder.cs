@@ -16,10 +16,10 @@ namespace DiscordManager.Interfaces
     /// <summary>
     ///   Use the Command Service in DiscordManager
     /// </summary>
-    public T WithCommandModule(string prefix = "!")
+    public T WithCommandModule(string prefix = "!", CommandConfig config = null)
     {
-      Option.UseCommandModule = true;
       Option.Prefix = prefix;
+      Option.CommandConfig = config ?? CommandConfig.GetDefault();
       return (T) this;
     }
 
