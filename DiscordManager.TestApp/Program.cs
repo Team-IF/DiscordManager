@@ -18,7 +18,7 @@ namespace DiscordManager.TestApp
                 .UseObjectService()
                 .Build();
 
-            discordManager.AddObject<TestObj>("test");
+            discordManager.AddObject<TestObj>();
             discordManager.Log += Log;
             discordManager.Run();
         }

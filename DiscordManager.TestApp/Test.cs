@@ -7,13 +7,15 @@ namespace DiscordManager.TestApp
 {
   public class Test : CommandModule
   {
-    [CommandName("Test"), RequirePermission(Permission.User)]
-    public async void TestMethod(int? args)
+    [CommandName("Test")]
+    public async void TestMethod()
     {
-      await ReplyAsync(args.ToString());
+      var obj = Manager.GetObject<TestObj>();
+      await ReplyAsync(obj.Yea);
     }
 
-    public async void Test_help()
+    [HelpMethod("Test")]
+    public async void Help()
     {
       var eb = new EmbedBuilder();
       eb.WithTitle("This is Test Help");

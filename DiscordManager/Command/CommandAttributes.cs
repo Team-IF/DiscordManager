@@ -3,16 +3,6 @@ using Discord;
 
 namespace DiscordManager.Command
 {
-  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-  public class HelpTarget : Attribute
-  {
-    internal readonly string[] Names;
-
-    public HelpTarget(params string[] commandName)
-    {
-      Names = commandName;
-    }
-  }
 
   /// <summary>
   ///   Use For Command Method
@@ -27,6 +17,32 @@ namespace DiscordManager.Command
     {
       Names = commandName;
     }
+  }
+  
+  /// <summary>
+  ///   Used when a method is a method that helps other methods
+  /// </summary>
+  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+  public class HelpMethod : Attribute
+  {
+    internal readonly string TargetMethod;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="targetMethod">First command name of target method</param>
+    public HelpMethod(string targetMethod)
+    {
+      TargetMethod = targetMethod;
+    }
+  }
+
+  /// <summary>
+  ///   Used when it is not a command method
+  /// </summary>
+  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+  public class NotMapping : Attribute
+  {
   }
 
   /// <summary>

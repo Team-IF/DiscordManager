@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DiscordManager.Logging;
 
 namespace DiscordManager.Service
@@ -60,9 +61,18 @@ namespace DiscordManager.Service
         return;
       }
 
-      var info = args == null
-        ? type.GetConstructor(null)
-        : type.GetConstructor(args.Select(o => o.GetType()).ToArray());
+      ConstructorInfo info;
+      try
+      {
+        info = args == null
+          ? type.GetConstructor(Type.EmptyTypes)
+          : type.GetConstructor(args.Select(o => o.GetType()).ToArray());
+      }
+      catch (Exception e)
+      {
+        _logger.CriticalAsync(e.StackTrace, e);
+        throw;
+      }
       var instance = info.Invoke(args);
       _objects.Add(type.Name, instance);
     }

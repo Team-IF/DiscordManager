@@ -4,9 +4,9 @@
   {
     public readonly string Yea;
 
-    public TestObj(string yea)
+    public TestObj()
     {
-      Yea = yea;
+      Yea = "YEA";
     }
   }
 }

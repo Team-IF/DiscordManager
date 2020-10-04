@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using DiscordManager.Logging;
 
 namespace DiscordManager.Interfaces
 {
@@ -6,7 +7,7 @@ namespace DiscordManager.Interfaces
   {
     protected DiscordManager Manager => DiscordManager.Manager;
     protected BaseSocketClient Client { get; private set; }
-    public SocketMessage Message { get; private set; }
+    protected SocketMessage Message { get; private set; }
 
     /// <summary>
     ///   Get Message Author

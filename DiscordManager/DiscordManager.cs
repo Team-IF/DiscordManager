@@ -108,7 +108,7 @@ namespace DiscordManager
       await _clientLogger.DebugAsync("Successfully Register Events").ConfigureAwait(false);
       await Client.LoginAsync(type, token).ConfigureAwait(false);
       await Client.StartAsync().ConfigureAwait(false);
-
+      
       await Client.SetStatusAsync(_status);
       if (_activity != null)
         await Client.SetActivityAsync(_activity);
@@ -119,6 +119,10 @@ namespace DiscordManager
     {
       Client.Log += message =>
         _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));
+      Client.LoggedIn += async () =>
+      {
+        await _clientLogger.InfoAsync($"Login to {Client.GetCurrentUser().GetFullName()}").ConfigureAwait(false);
+      };
     }
 
     public void AddObject(object obj)
@@ -130,12 +134,6 @@ namespace DiscordManager
     {
       _objectService.Add<T>(obj);
     }
-
-    public void AddObject<T>()
-    {
-      _objectService.Add<T>();
-    }
-
     public T GetObject<T>()
     {
       return _objectService.Get<T>();

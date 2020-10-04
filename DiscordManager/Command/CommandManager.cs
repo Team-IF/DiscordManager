@@ -81,22 +81,30 @@ namespace DiscordManager.Command
           if (!method.IsPublic)
             continue;
 
-          if (!(Attribute.GetCustomAttribute(method, typeof(CommandName), true) is CommandName commandName))
+          if (Attribute.GetCustomAttribute(method, typeof(HelpMethod), true) is HelpMethod helpMethod)
+          {
+            try
+            {
+              if (nameList.Any(names => names.Contains(helpMethod.TargetMethod)))
+                helpCommands[helpMethod.TargetMethod] = method;
+            }
+            catch (Exception e)
+            {
+              CommandLogger.CriticalAsync("CM(Command Manager) Error", e);
+              throw;
+            }
+
             continue;
+          }
+
+          if (Attribute.GetCustomAttribute(method, typeof(NotMapping), true) is NotMapping)
+            continue;
+
+          if (!(Attribute.GetCustomAttribute(method, typeof(CommandName), true) is CommandName commandName))
+            throw new ManagerException($"{method.Name} doesn't have CommandName Attribute");
 
           if (commandName.Names.Any(name => nameList.Any(names => names.Contains(name))))
             throw new ManagerException($"{method.Name} has Overlap CommandName");
-
-          try
-          {
-            var helpMethod = type.GetMethod($"{commandName.Names[0]}_help");
-            if (helpMethod != null) helpCommands[commandName.Names[0]] = helpMethod;
-          }
-          catch (Exception e)
-          {
-            CommandLogger.CriticalAsync("CM(Command Manager) Error", e);
-            throw;
-          }
 
           var commandGroup = Attribute.GetCustomAttribute(method, typeof(CommandGroup), true) as CommandGroup;
           var botPermission =
@@ -141,7 +149,7 @@ namespace DiscordManager.Command
 
     public static async void ExecuteCommand(SocketMessage message, string commandName)
     {
-      var task = Task.Run(async () =>
+      var task = new Task(async () =>
       {
         var valuePair = GetCommand(commandName);
         if (valuePair == null)
@@ -179,7 +187,8 @@ namespace DiscordManager.Command
           }
         }
 
-        if (_helpArg.Contains(splitContent[0])) service = _helpCommands[command.CommandName[0]];
+        if (splitContent.Length != 0 && _helpArg.Contains(splitContent[0]))
+          service = _helpCommands[command.CommandName[0]];
 
         baseClass.SetMessage(message);
         var parameters = service.GetParameters();
@@ -192,7 +201,6 @@ namespace DiscordManager.Command
             {
               var parameter = parameters[i];
               var parameterType = parameter.ParameterType;
-              object converted = null;
               var count = i + 1;
               if (parameterType.IsArray && count == parameters.Length)
               {
@@ -204,44 +212,44 @@ namespace DiscordManager.Command
                     Convert.ChangeType(item, elementType);
                     return true;
                   }
-                  catch (Exception)
+                  catch
                   {
+                    // ignored
                   }
 
                   return false;
                 }).Select(item => Convert.ChangeType(item, elementType)).ToArray();
-                
+
                 var destinationArray = Array.CreateInstance(elementType, paramArray.Length);
                 Array.Copy(paramArray, destinationArray, paramArray.Length);
                 param[i] = destinationArray;
               }
               else
-                try
+              {
+                object converted = null;
+                if (splitContent.Length > count)
                 {
                   var content = splitContent[i];
-                  if (content != null)
-                    try
-                    {
-                      if (parameterType == typeof(string[]))
-                        converted = splitContent;
-                      else if (parameterType.IsEnum)
-                        converted = Enum.Parse(parameterType, content);
-                      else
-                        converted = parameterType == typeof(string)
-                          ? content
-                          : Convert.ChangeType(content, parameterType);
-                    }
-                    catch (Exception)
-                    {
-                      if (parameter.HasDefaultValue)
-                        converted = parameter.DefaultValue;
-                    }
+                  try
+                  {
+                    if (parameterType == typeof(string[]))
+                      converted = splitContent;
+                    else if (parameterType.IsEnum)
+                      converted = Enum.Parse(parameterType, content);
+                    else
+                      converted = parameterType == typeof(string)
+                        ? content
+                        : Convert.ChangeType(content, parameterType);
+                  }
+                  catch (Exception)
+                  {
+                    if (parameter.HasDefaultValue)
+                      converted = parameter.DefaultValue;
+                  }
+                }
 
-                  param[i] = converted;
-                }
-                catch (IndexOutOfRangeException)
-                {
-                }
+                param[i] = converted;
+              }
             }
         }
 
@@ -250,7 +258,8 @@ namespace DiscordManager.Command
       });
       try
       {
-        await task;
+        task.Start();
+        task.Wait();
       }
       catch
       {
