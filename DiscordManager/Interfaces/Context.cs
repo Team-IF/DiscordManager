@@ -5,17 +5,21 @@ namespace DiscordManager.Interfaces
 {
   public class Context
   {
-    protected DiscordManager Manager => DiscordManager.Manager;
-    protected BaseSocketClient Client { get; private set; }
+    protected DiscordManager Manager = DiscordManager.Manager;
+    protected BaseSocketClient Client => DiscordManager.Manager.GetClient();
     protected SocketMessage Message { get; private set; }
+    internal SocketMessage _message
+    {
+      set => Message = value;
+    }
 
     /// <summary>
-    ///   Get Message Author
+    ///   Get Message Author from Message
     /// </summary>
     public SocketUser Author => Message.Author;
 
     /// <summary>
-    ///   Get Channel from Message
+    ///   Get Message Channel from Message
     /// </summary>
     public ISocketMessageChannel Channel => Message.Channel;
 
@@ -24,15 +28,5 @@ namespace DiscordManager.Interfaces
     ///   Opposition is guild not null
     /// </summary>
     public SocketGuild? Guild => (Channel as SocketGuildChannel)?.Guild;
-
-    internal void SetClient(BaseSocketClient message)
-    {
-      Client = message;
-    }
-
-    internal void SetMessage(SocketMessage message)
-    {
-      Message = message;
-    }
   }
 }

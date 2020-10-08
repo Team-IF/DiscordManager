@@ -17,32 +17,30 @@ namespace DiscordManager
   /// </summary>
   public class DiscordManager : Events
   {
-    private readonly Game _activity;
+    internal static DiscordManager Manager { get; private set; }
+    private readonly BaseSocketClient Client;
     private readonly ConfigManager _configManager;
     private readonly ObjectService _objectService;
-    private readonly int[]? _shardIds;
-    private readonly UserStatus _status;
-    private readonly int? _totalShard;
     public readonly string Prefix;
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
       Manager = this;
-      _totalShard = option.Shards;
-      _shardIds = option.ShardIds;
       Client = option.Client;
-      _status = option.BotStatus;
-      _activity = option.Game;
       Prefix = option.Prefix;
       if (Client == null)
       {
         var socketConfig = option.SocketConfig ?? new DiscordSocketConfig
-          {MessageCacheSize = 100, TotalShards = _totalShard};
-        if (_totalShard.HasValue)
-          Client = new DiscordShardedClient(_shardIds, socketConfig);
+          {MessageCacheSize = 100, TotalShards = option.Shards};
+        if (option.Shards.HasValue)
+          Client = new DiscordShardedClient(option.ShardIds, socketConfig);
         else
           Client = new DiscordSocketClient(socketConfig);
       }
+      
+      if (option.Shards.HasValue)
+        Client.SetActivityAsync(option.Game).ConfigureAwait(false);
+      Client.SetStatusAsync(option.BotStatus).ConfigureAwait(false);
 
       if (option.UseConfig)
       {
@@ -59,13 +57,11 @@ namespace DiscordManager
       if (option.CommandConfig != null)
       {
         _clientLogger.DebugAsync("Load CommandModules...");
-        CommandManager.LoadCommands(Client, option.CommandConfig.HelpArg);
+        CommandManager.LoadCommands(option.CommandConfig.HelpArg);
         Client.MessageReceived += option.CommandConfig.CommandFunc ?? ClientOnMessageReceived;
       }
     }
 
-    internal static DiscordManager Manager { get; private set; }
-    public BaseSocketClient Client { get; }
 
     private async Task ClientOnMessageReceived(SocketMessage arg)
     {
@@ -109,9 +105,6 @@ namespace DiscordManager
       await Client.LoginAsync(type, token).ConfigureAwait(false);
       await Client.StartAsync().ConfigureAwait(false);
       
-      await Client.SetStatusAsync(_status);
-      if (_activity != null)
-        await Client.SetActivityAsync(_activity);
       await Task.Delay(-1);
     }
 
@@ -123,6 +116,16 @@ namespace DiscordManager
       {
         await _clientLogger.InfoAsync($"Login to {Client.GetCurrentUser().GetFullName()}").ConfigureAwait(false);
       };
+    }
+    
+    public BaseSocketClient GetClient()
+    {
+      return Client;
+    }
+
+    public T GetClient<T>() where T : BaseSocketClient, IDiscordClient, IDisposable
+    {
+      return (T) Client;
     }
 
     public void AddObject(object obj)

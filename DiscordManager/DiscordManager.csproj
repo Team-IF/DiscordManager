@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <VersionPrefix>0.2.0</VersionPrefix>
-        <VersionSuffix>dev</VersionSuffix>
+        <VersionSuffix>dev-20201009</VersionSuffix>
         <PackageId>DiscordManager</PackageId>
         <PackageTags>Discord</PackageTags>
         <Title>DiscordManager</Title>

@@ -12,7 +12,7 @@ namespace DiscordManager
       .GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
     public UserStatus BotStatus = UserStatus.Online;
-    public BaseSocketClient? Client;
+    public BaseSocketClient Client;
     public CommandConfig CommandConfig = null!;
     public Game? Game;
     public LogLevel LogLevel = LogLevel.INFO;

@@ -60,7 +60,7 @@ namespace DiscordManager.Command
       return Permission.User;
     }
 
-    internal static void LoadCommands(BaseSocketClient client, string[] commandConfigHelpArg)
+    internal static void LoadCommands(string[] commandConfigHelpArg)
     {
       _helpArg = commandConfigHelpArg;
       var assembly = AppDomain.CurrentDomain.GetAssemblies();
@@ -118,7 +118,6 @@ namespace DiscordManager.Command
         }
 
         var construct = (Context) Activator.CreateInstance(type);
-        construct.SetClient(client);
         commands.Add(construct, list);
       }
 
@@ -126,6 +125,11 @@ namespace DiscordManager.Command
       _commands = commands;
     }
 
+    /// <summary>
+    ///  return all Commands
+    ///  if CommandGroup is generic not set CommandGroup Attribute Commands
+    /// </summary>
+    /// <returns>Dict[CommandGroup, Commands]</returns>
     public static Dictionary<string, List<CommandInfo>> GetAllCommands()
     {
       var dict = new Dictionary<string, List<CommandInfo>>();
@@ -190,7 +194,7 @@ namespace DiscordManager.Command
         if (splitContent.Length != 0 && _helpArg.Contains(splitContent[0]))
           service = _helpCommands[command.CommandName[0]];
 
-        baseClass.SetMessage(message);
+        baseClass._message = message;
         var parameters = service.GetParameters();
         object[] param = null;
         if (parameters.Length != 0)
@@ -263,7 +267,7 @@ namespace DiscordManager.Command
       }
       catch
       {
-        await CommandLogger.DebugAsync("Error At Executing Command", task.Exception);
+        await CommandLogger.DebugAsync("Error At Executing Command", task.Exception).ConfigureAwait(false);
       }
     }
   }
