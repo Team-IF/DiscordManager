@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Discord;
+﻿using Discord;
 using DiscordManager.Command;
 using DiscordManager.Interfaces;
 
@@ -8,10 +7,9 @@ namespace DiscordManager.TestApp
   public class Test : CommandModule
   {
     [CommandName("Test")]
-    public async void TestMethod()
+    public async void TestMethod(ulong test)
     {
-      var obj = Manager.GetObject<TestObj>();
-      await ReplyAsync(obj.Yea);
+      await ReplyAsync(test.ToString());
     }
 
     [HelpMethod("Test")]

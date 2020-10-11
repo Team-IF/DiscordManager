@@ -231,7 +231,7 @@ namespace DiscordManager.Command
               else
               {
                 object converted = null;
-                if (splitContent.Length > count)
+                if (splitContent.Length > i)
                 {
                   var content = splitContent[i];
                   try

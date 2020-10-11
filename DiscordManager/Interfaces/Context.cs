@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using DiscordManager.Logging;
 
 namespace DiscordManager.Interfaces
@@ -13,6 +14,8 @@ namespace DiscordManager.Interfaces
       set => Message = value;
     }
 
+    protected SocketSelfUser Self => Client.CurrentUser;
+
     /// <summary>
     ///   Get Message Author from Message
     /// </summary>
@@ -21,12 +24,12 @@ namespace DiscordManager.Interfaces
     /// <summary>
     ///   Get Message Channel from Message
     /// </summary>
-    public ISocketMessageChannel Channel => Message.Channel;
+    protected ISocketMessageChannel Channel => Message.Channel;
 
     /// <summary>
     ///   If message from guild Not Null
     ///   Opposition is guild not null
     /// </summary>
-    public SocketGuild? Guild => (Channel as SocketGuildChannel)?.Guild;
+    protected SocketGuild? Guild => (Channel as SocketGuildChannel)?.Guild;
   }
 }

@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <VersionPrefix>0.2.0</VersionPrefix>
-        <VersionSuffix>dev-20201009</VersionSuffix>
+        <VersionSuffix>dev-20201011</VersionSuffix>
         <PackageId>DiscordManager</PackageId>
         <PackageTags>Discord</PackageTags>
         <Title>DiscordManager</Title>
@@ -22,13 +22,6 @@
       <PackageReference Include="Discord.Net" Version="2.2.0" />
       <PackageReference Include="Discord.Net.Core" Version="2.2.0" />
       <PackageReference Include="Nett" Version="0.15.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="Template\EnumGenerator.ttinclude">
-        <Generator>TextTemplatingFileGenerator</Generator>
-        <LastGenOutput>EnumGenerator.generated.cs</LastGenOutput>
-      </None>
     </ItemGroup>
 
 </Project>
