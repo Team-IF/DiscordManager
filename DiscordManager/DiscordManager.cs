@@ -9,6 +9,7 @@ using DiscordManager.Event;
 using DiscordManager.Interfaces;
 using DiscordManager.Logging;
 using DiscordManager.Service;
+using DiscordManager.Voice;
 
 namespace DiscordManager
 {
@@ -18,29 +19,31 @@ namespace DiscordManager
   public class DiscordManager : Events
   {
     internal static DiscordManager Manager { get; private set; }
-    private readonly BaseSocketClient Client;
-    private readonly ConfigManager _configManager;
+    private readonly BaseSocketClient _client;
+    private readonly ConfigManager? _configManager;
+    private readonly VoiceManager? _manager;
     private readonly ObjectService _objectService;
     public readonly string Prefix;
 
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
       Manager = this;
-      Client = option.Client;
       Prefix = option.Prefix;
-      if (Client == null)
+      if (option.Client == null)
       {
         var socketConfig = option.SocketConfig ?? new DiscordSocketConfig
           {MessageCacheSize = 100, TotalShards = option.Shards};
         if (option.Shards.HasValue)
-          Client = new DiscordShardedClient(option.ShardIds, socketConfig);
+          _client = new DiscordShardedClient(option.ShardIds, socketConfig);
         else
-          Client = new DiscordSocketClient(socketConfig);
+          _client = new DiscordSocketClient(socketConfig);
       }
-      
+      else
+        _client = option.Client;
+
       if (option.Shards.HasValue)
-        Client.SetActivityAsync(option.Game).ConfigureAwait(false);
-      Client.SetStatusAsync(option.BotStatus).ConfigureAwait(false);
+        _client.SetActivityAsync(option.Game).ConfigureAwait(false);
+      _client.SetStatusAsync(option.BotStatus).ConfigureAwait(false);
 
       if (option.UseConfig)
       {
@@ -58,8 +61,10 @@ namespace DiscordManager
       {
         _clientLogger.DebugAsync("Load CommandModules...");
         CommandManager.LoadCommands(option.CommandConfig.HelpArg);
-        Client.MessageReceived += option.CommandConfig.CommandFunc ?? ClientOnMessageReceived;
+        _client.MessageReceived += option.CommandConfig.CommandFunc ?? ClientOnMessageReceived;
       }
+
+      if (option.UseVoiceManager) _manager = new VoiceManager();
     }
 
 
@@ -102,30 +107,30 @@ namespace DiscordManager
       RegisterEvents();
 
       await _clientLogger.DebugAsync("Successfully Register Events").ConfigureAwait(false);
-      await Client.LoginAsync(type, token).ConfigureAwait(false);
-      await Client.StartAsync().ConfigureAwait(false);
+      await _client.LoginAsync(type, token).ConfigureAwait(false);
+      await _client.StartAsync().ConfigureAwait(false);
       
       await Task.Delay(-1);
     }
 
     private void RegisterEvents()
     {
-      Client.Log += message =>
+      _client.Log += message =>
         _log.Invoke(new LogObject(LogLevel.INFO, message.Source, message.Message, message.Exception));
-      Client.LoggedIn += async () =>
+      _client.LoggedIn += async () =>
       {
-        await _clientLogger.InfoAsync($"Login to {Client.GetCurrentUser().GetFullName()}").ConfigureAwait(false);
+        await _clientLogger.InfoAsync($"Login to {_client.GetCurrentUser().GetFullName()}").ConfigureAwait(false);
       };
     }
     
     public BaseSocketClient GetClient()
     {
-      return Client;
+      return _client;
     }
 
     public T GetClient<T>() where T : BaseSocketClient, IDiscordClient, IDisposable
     {
-      return (T) Client;
+      return (T) _client;
     }
 
     public void AddObject(object obj)
@@ -162,7 +167,7 @@ namespace DiscordManager
       return _configManager.Get(obj);
     }
 
-    public void Run(string token = null, TokenType type = TokenType.Bot)
+    public void Run(string? token = null, TokenType type = TokenType.Bot)
     {
       try
       {

@@ -6,7 +6,7 @@ namespace DiscordManager.Interfaces
 {
   public class CommandConfig
   {
-    public Func<SocketMessage, Task> CommandFunc;
+    public Func<SocketMessage, Task>? CommandFunc;
     public string[] HelpArg = {"help"};
 
     internal static CommandConfig GetDefault()

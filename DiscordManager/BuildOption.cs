@@ -12,8 +12,8 @@ namespace DiscordManager
       .GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
     public UserStatus BotStatus = UserStatus.Online;
-    public BaseSocketClient Client;
-    public CommandConfig CommandConfig = null!;
+    public BaseSocketClient? Client = null;
+    public CommandConfig? CommandConfig = null;
     public Game? Game;
     public LogLevel LogLevel = LogLevel.INFO;
     public string Path;
@@ -23,5 +23,6 @@ namespace DiscordManager
     public DiscordSocketConfig? SocketConfig;
     public bool UseConfig = false;
     public bool UseObjectService = false;
+    public bool UseVoiceManager = false;
   }
 }
