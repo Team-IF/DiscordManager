@@ -80,13 +80,15 @@ namespace DiscordManager.Command
           var method = methods[j];
           if (!method.IsPublic)
             continue;
+          if (Attribute.GetCustomAttribute(method, typeof(NotMapping), true) is NotMapping)
+            continue;
 
           if (Attribute.GetCustomAttribute(method, typeof(HelpMethod), true) is HelpMethod helpMethod)
           {
             try
             {
               if (nameList.Any(names => names.Contains(helpMethod.TargetMethod)))
-                helpCommands[helpMethod.TargetMethod] = method;
+                helpCommands.Add(helpMethod.TargetMethod, method);
             }
             catch (Exception e)
             {
@@ -96,9 +98,6 @@ namespace DiscordManager.Command
 
             continue;
           }
-
-          if (Attribute.GetCustomAttribute(method, typeof(NotMapping), true) is NotMapping)
-            continue;
 
           if (!(Attribute.GetCustomAttribute(method, typeof(CommandName), true) is CommandName commandName))
             throw new ManagerException($"{method.Name} doesn't have CommandName Attribute");
@@ -192,8 +191,10 @@ namespace DiscordManager.Command
         }
 
         if (splitContent.Length != 0 && _helpArg.Contains(splitContent[0]))
-          service = _helpCommands[command.CommandName[0]];
-
+        {
+          if (_helpCommands.ContainsKey(command.CommandName[0]))
+            service = _helpCommands[command.CommandName[0]];
+        }
         baseClass._message = message;
         var parameters = service.GetParameters();
         object[] param = null;
