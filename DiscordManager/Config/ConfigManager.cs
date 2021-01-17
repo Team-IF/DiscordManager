@@ -49,6 +49,22 @@ namespace DiscordManager.Config
       }
     }
 
+    public void Save<T>() where T : IConfig
+    {
+      lock (_lockOnly)
+      {
+        if (_configs.TryGetValue(typeof(T).Name, out var value))
+        {
+          var fullName = $"{typeof(T).Name}Config.{value.Type.ToString().ToLower()}";
+          var target = value.Target;
+          if (value.Type == ConfigType.JSON)
+            JsonLoader.SaveJson(fullName, target, target.GetType());
+          else
+            TomlLoader.SaveToml(fullName, target).ConfigureAwait(false);
+        }
+      }
+    }
+
     public void ReLoad()
     {
       lock (_lockOnly)

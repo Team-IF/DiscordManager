@@ -167,6 +167,16 @@ namespace DiscordManager
       return _configManager.Get(obj);
     }
 
+    public void SaveConfig<T>() where T : IConfig
+    {
+      _configManager?.Save<T>();
+    }
+
+    public void SaveConfigs()
+    {
+      _configManager?.Save();
+    }
+
     public void Run(string? token = null, TokenType type = TokenType.Bot)
     {
       try

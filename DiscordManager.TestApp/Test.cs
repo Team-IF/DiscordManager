@@ -1,5 +1,4 @@
-﻿using Discord;
-using DiscordManager.Command;
+﻿using DiscordManager.Command;
 using DiscordManager.Interfaces;
 
 namespace DiscordManager.TestApp
@@ -7,17 +6,12 @@ namespace DiscordManager.TestApp
   public class Test : CommandModule
   {
     [CommandName("Test")]
-    public async void TestMethod(ulong test)
+    public async void TestMethod()
     {
-      await ReplyAsync(test.ToString());
-    }
-
-    [HelpMethod("Test")]
-    public async void Help()
-    {
-      var eb = new EmbedBuilder();
-      eb.WithTitle("This is Test Help");
-      await ReplyAsync(embed: eb.Build());
+      var config = Manager.GetConfig<Verify>();
+      config.Test.Add("test", "test");
+      
+      Manager.SaveConfig<Verify>();
     }
   }
 }
