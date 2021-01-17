@@ -87,7 +87,7 @@ namespace DiscordManager.Command
           {
             try
             {
-              if (nameList.Any(names => names.Contains(helpMethod.TargetMethod)))
+              if (!nameList.Any(names => names.Contains(helpMethod.TargetMethod)))
                 helpCommands.Add(helpMethod.TargetMethod, method);
             }
             catch (Exception e)
