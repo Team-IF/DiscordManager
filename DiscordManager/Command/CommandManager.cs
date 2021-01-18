@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using DiscordManager.Config;
@@ -18,6 +19,8 @@ namespace DiscordManager.Command
     private static IReadOnlyDictionary<Context, IReadOnlyCollection<CommandWrapper>> _commands;
     private static IReadOnlyDictionary<string, MethodInfo> _helpCommands;
     private static string[] _helpArg;
+    private static readonly Regex _contentRegex = new Regex(@"(""[^""]+""|[^\s""]+)");
+
 
     private static KeyValuePair<Context, CommandWrapper>? GetCommand(string commandName)
     {
@@ -175,7 +178,8 @@ namespace DiscordManager.Command
         }
 
         if (!command.PermCheck(message)) return;
-        var splitContent = message.Content.Split(' ').Skip(1).ToArray();
+        var matchesCollection = _contentRegex.Matches(message.Content);
+        var matches = matchesCollection.Select(mts => mts.Value.Replace("\"", "").Trim()).Skip(1).ToArray();
         var service = command.MethodInfo;
         var perm = command.BotPermission;
         if (channel is SocketGuildChannel guildChannel && perm != null)
@@ -190,18 +194,18 @@ namespace DiscordManager.Command
           }
         }
 
-        if (splitContent.Length != 0 && _helpArg.Contains(splitContent[0]))
+        if (matches.Length != 0 && _helpArg.Contains(matches[0]))
         {
           if (_helpCommands.ContainsKey(command.CommandName[0]))
             service = _helpCommands[command.CommandName[0]];
         }
         baseClass._message = message;
         var parameters = service.GetParameters();
-        object[] param = null;
+        object?[]? param = null;
         if (parameters.Length != 0)
         {
           param = new object[parameters.Length];
-          if (splitContent.Length != 0)
+          if (matches.Length != 0)
             for (var i = 0; i < parameters.Length; i++)
             {
               var parameter = parameters[i];
@@ -210,7 +214,7 @@ namespace DiscordManager.Command
               if (parameterType.IsArray && count == parameters.Length)
               {
                 var elementType = parameterType.GetElementType();
-                var paramArray = splitContent.Skip(i).Where(item =>
+                var paramArray = matches.Skip(i).Where(item =>
                 {
                   try
                   {
@@ -231,14 +235,14 @@ namespace DiscordManager.Command
               }
               else
               {
-                object converted = null;
-                if (splitContent.Length > i)
+                object? converted = null;
+                if (matches.Length > i)
                 {
-                  var content = splitContent[i];
+                  var content = matches[i];
                   try
                   {
                     if (parameterType == typeof(string[]))
-                      converted = splitContent;
+                      converted = matches;
                     else if (parameterType.IsEnum)
                       converted = Enum.Parse(parameterType, content);
                     else

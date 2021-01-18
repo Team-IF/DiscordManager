@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -74,11 +76,12 @@ namespace DiscordManager
         return;
 
       var content = arg.Content.Trim();
-      var splitContent = content.Split(' ');
 
+      var splitContent = content.Split(' ');
       var firstWord = splitContent[0];
       if (!firstWord.StartsWith(Prefix)) return;
       var commandName = firstWord.Substring(Prefix.Length);
+      
       CommandManager.ExecuteCommand(arg, commandName);
     }
 

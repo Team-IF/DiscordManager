@@ -8,10 +8,6 @@ namespace DiscordManager.TestApp
     [CommandName("Test")]
     public async void TestMethod()
     {
-      var config = Manager.GetConfig<Verify>();
-      config.Test.Add("test", "test");
-      
-      Manager.SaveConfig<Verify>();
     }
   }
 }
