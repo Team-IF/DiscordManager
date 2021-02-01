@@ -34,15 +34,6 @@ namespace DiscordManager.Interfaces
     }
 
     /// <summary>
-    /// DiscordManager allows to use voice manager
-    /// </summary>
-    public T WithVoiceManager()
-    {
-      Option.UseVoiceManager = true;
-      return (T) this;
-    }
-
-    /// <summary>
     ///   Set LogLevel(NONE,INFO, ERROR, CRITICAL,DEBUG, ALL)
     /// </summary>
     /// <param name="level">Log Level for DiscordManager</param>

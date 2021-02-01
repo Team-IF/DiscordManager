@@ -16,13 +16,12 @@ namespace DiscordManager
     public CommandConfig? CommandConfig = null;
     public Game? Game;
     public LogLevel LogLevel = LogLevel.INFO;
-    public string Path;
-    public string Prefix;
+    public string? Path;
+    public string? Prefix;
     public int[]? ShardIds;
     public int? Shards;
     public DiscordSocketConfig? SocketConfig;
     public bool UseConfig = false;
     public bool UseObjectService = false;
-    public bool UseVoiceManager = false;
   }
 }

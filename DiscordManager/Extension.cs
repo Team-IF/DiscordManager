@@ -6,17 +6,23 @@ namespace DiscordManager
   public static class Extension
   {
     /// <summary>
-    /// return value is "username#discriminator"
+    ///   return value is "username#discriminator"
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    public static string GetFullName(this IUser user) => $"{user.Username}#{user.Discriminator}";
+    public static string GetFullName(this IUser user)
+    {
+      return $"{user.Username}#{user.Discriminator}";
+    }
 
     /// <summary>
-    /// return value is current user(logged in as token)
+    ///   return value is current user(logged in as token)
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    public static ISelfUser GetCurrentUser(this BaseSocketClient client) => (ISelfUser) client.CurrentUser ?? client.Rest.CurrentUser;
+    public static ISelfUser GetCurrentUser(this BaseSocketClient client)
+    {
+      return (ISelfUser) client.CurrentUser ?? client.Rest.CurrentUser;
+    }
   }
 }

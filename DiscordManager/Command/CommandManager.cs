@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -128,8 +129,8 @@ namespace DiscordManager.Command
     }
 
     /// <summary>
-    ///  return all Commands
-    ///  if CommandGroup is generic not set CommandGroup Attribute Commands
+    ///   return all Commands
+    ///   if CommandGroup is generic not set CommandGroup Attribute Commands
     /// </summary>
     /// <returns>Dict[CommandGroup, Commands]</returns>
     public static Dictionary<string, List<CommandInfo>> GetAllCommands()
@@ -195,10 +196,8 @@ namespace DiscordManager.Command
         }
 
         if (matches.Length != 0 && _helpArg.Contains(matches[0]))
-        {
           if (_helpCommands.ContainsKey(command.CommandName[0]))
             service = _helpCommands[command.CommandName[0]];
-        }
         baseClass._message = message;
         var parameters = service.GetParameters();
         object?[]? param = null;
@@ -214,21 +213,12 @@ namespace DiscordManager.Command
               if (parameterType.IsArray && count == parameters.Length)
               {
                 var elementType = parameterType.GetElementType();
-                var paramArray = matches.Skip(i).Where(item =>
-                {
-                  try
-                  {
-                    Convert.ChangeType(item, elementType);
-                    return true;
-                  }
-                  catch
-                  {
-                    // ignored
-                  }
+                if (elementType == null)
+                  continue;
 
-                  return false;
-                }).Select(item => Convert.ChangeType(item, elementType)).ToArray();
-
+                var paramArray = matches.Skip(i)
+                  .Where(item => TypeDescriptor.GetConverter(item).CanConvertTo(elementType))
+                  .Select(item => Convert.ChangeType(item, elementType)).ToArray();
                 var destinationArray = Array.CreateInstance(elementType, paramArray.Length);
                 Array.Copy(paramArray, destinationArray, paramArray.Length);
                 param[i] = destinationArray;

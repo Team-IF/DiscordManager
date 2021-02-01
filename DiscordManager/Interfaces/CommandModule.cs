@@ -22,9 +22,15 @@ namespace DiscordManager.Interfaces
       return await Channel.SendMessageAsync(text, isTTS, embed).ConfigureAwait(false);
     }
 
-    protected async Task<IGuildChannel> GetGuildChannel(ulong id) => Guild?.GetChannel(id);
+    protected async Task<IGuildChannel> GetGuildChannel(ulong id)
+    {
+      return Guild?.GetChannel(id);
+    }
 
-    protected async Task<IChannel> GetChannel(ulong id) => Manager.GetClient().GetChannel(id);
+    protected async Task<IChannel> GetChannel(ulong id)
+    {
+      return Manager.GetClient().GetChannel(id);
+    }
 
     protected async Task<IEmote?> NextEmojiAsync(RestUserMessage message, IEmote[] emotes, bool catchAny = false,
       TimeSpan? timeOut = null, CancellationToken token = default)

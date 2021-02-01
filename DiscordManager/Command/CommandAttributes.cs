@@ -3,7 +3,6 @@ using Discord;
 
 namespace DiscordManager.Command
 {
-
   /// <summary>
   ///   Use For Command Method
   ///   Set Command Name or Command Names
@@ -18,7 +17,7 @@ namespace DiscordManager.Command
       Names = commandName;
     }
   }
-  
+
   /// <summary>
   ///   Used when a method is a method that helps other methods
   /// </summary>
@@ -28,7 +27,6 @@ namespace DiscordManager.Command
     internal readonly string TargetMethod;
 
     /// <summary>
-    /// 
     /// </summary>
     /// <param name="targetMethod">First command name of target method</param>
     public HelpMethod(string targetMethod)

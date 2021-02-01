@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -11,7 +9,6 @@ using DiscordManager.Event;
 using DiscordManager.Interfaces;
 using DiscordManager.Logging;
 using DiscordManager.Service;
-using DiscordManager.Voice;
 
 namespace DiscordManager
 {
@@ -20,10 +17,8 @@ namespace DiscordManager
   /// </summary>
   public class DiscordManager : Events
   {
-    internal static DiscordManager Manager { get; private set; }
     private readonly BaseSocketClient _client;
     private readonly ConfigManager? _configManager;
-    private readonly VoiceManager? _manager;
     private readonly ObjectService _objectService;
     public readonly string Prefix;
 
@@ -41,7 +36,9 @@ namespace DiscordManager
           _client = new DiscordSocketClient(socketConfig);
       }
       else
+      {
         _client = option.Client;
+      }
 
       if (option.Shards.HasValue)
         _client.SetActivityAsync(option.Game).ConfigureAwait(false);
@@ -65,9 +62,9 @@ namespace DiscordManager
         CommandManager.LoadCommands(option.CommandConfig.HelpArg);
         _client.MessageReceived += option.CommandConfig.CommandFunc ?? ClientOnMessageReceived;
       }
-
-      if (option.UseVoiceManager) _manager = new VoiceManager();
     }
+
+    internal static DiscordManager Manager { get; private set; }
 
 
     private async Task ClientOnMessageReceived(SocketMessage arg)
@@ -81,7 +78,7 @@ namespace DiscordManager
       var firstWord = splitContent[0];
       if (!firstWord.StartsWith(Prefix)) return;
       var commandName = firstWord.Substring(Prefix.Length);
-      
+
       CommandManager.ExecuteCommand(arg, commandName);
     }
 
@@ -112,7 +109,7 @@ namespace DiscordManager
       await _clientLogger.DebugAsync("Successfully Register Events").ConfigureAwait(false);
       await _client.LoginAsync(type, token).ConfigureAwait(false);
       await _client.StartAsync().ConfigureAwait(false);
-      
+
       await Task.Delay(-1);
     }
 
@@ -125,7 +122,7 @@ namespace DiscordManager
         await _clientLogger.InfoAsync($"Login to {_client.GetCurrentUser().GetFullName()}").ConfigureAwait(false);
       };
     }
-    
+
     public BaseSocketClient GetClient()
     {
       return _client;
@@ -145,6 +142,7 @@ namespace DiscordManager
     {
       _objectService.Add<T>(obj);
     }
+
     public T GetObject<T>()
     {
       return _objectService.Get<T>();

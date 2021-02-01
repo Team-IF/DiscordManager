@@ -8,6 +8,7 @@ namespace DiscordManager.TestApp
     [CommandName("Test")]
     public async void TestMethod()
     {
+      await ReplyAsync("Test");
     }
   }
 }

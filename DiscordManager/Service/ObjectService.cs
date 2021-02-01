@@ -73,6 +73,7 @@ namespace DiscordManager.Service
         _logger.CriticalAsync(e.StackTrace, e);
         throw;
       }
+
       var instance = info.Invoke(args);
       _objects.Add(type.Name, instance);
     }

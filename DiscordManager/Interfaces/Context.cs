@@ -1,6 +1,4 @@
-﻿using Discord;
-using Discord.WebSocket;
-using DiscordManager.Logging;
+﻿using Discord.WebSocket;
 
 namespace DiscordManager.Interfaces
 {
@@ -9,6 +7,7 @@ namespace DiscordManager.Interfaces
     protected DiscordManager Manager = DiscordManager.Manager;
     protected BaseSocketClient Client => DiscordManager.Manager.GetClient();
     protected SocketMessage Message { get; private set; }
+
     internal SocketMessage _message
     {
       set => Message = value;
