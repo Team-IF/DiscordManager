@@ -22,6 +22,15 @@ namespace DiscordManager.Interfaces
       Option.CommandConfig = config ?? CommandConfig.GetDefault();
       return (T) this;
     }
+    
+    /// <summary>
+    ///   Set GatewayIntents
+    /// </summary>
+    public T WithGatewayIntents(GatewayIntents intents)
+    {
+      Option.Intents = intents;
+      return (T) this;
+    }
 
     /// <summary>
     ///   Use the Config in DiscordManager

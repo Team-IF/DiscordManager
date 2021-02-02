@@ -25,11 +25,14 @@ namespace DiscordManager
     internal DiscordManager(BuildOption option) : base(option.LogLevel)
     {
       Manager = this;
-      Prefix = option.Prefix;
+      Prefix = option.Prefix ?? "!";
       if (option.Client == null)
       {
         var socketConfig = option.SocketConfig ?? new DiscordSocketConfig
-          {MessageCacheSize = 100, TotalShards = option.Shards};
+        {
+          MessageCacheSize = 100, TotalShards = option.Shards,
+          GatewayIntents = option.Intents
+        };
         if (option.Shards.HasValue)
           _client = new DiscordShardedClient(option.ShardIds, socketConfig);
         else

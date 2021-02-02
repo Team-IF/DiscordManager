@@ -14,6 +14,7 @@ namespace DiscordManager
     public UserStatus BotStatus = UserStatus.Online;
     public BaseSocketClient? Client = null;
     public CommandConfig? CommandConfig = null;
+    public GatewayIntents? Intents = null;
     public Game? Game;
     public LogLevel LogLevel = LogLevel.INFO;
     public string? Path;
