@@ -1,3 +1,6 @@
+## Important
+This Repository Deprecated Goto [Managers](https://github.com/GPLNature/Managers)
+
 # DiscordManager
 해당 DiscordManager 는 C#으로 디스코드 봇을 처음 만들어보는 "초심자"를 위해 만들어졌습니다.
 
